@@ -10,4 +10,13 @@
 
   - Cálculo do total da encomenda a fornecedor: A informação da encomenda a fornecedor inclui o total da encomenda e o total de IVA, o que implica regras de cálculo para chegar a estes valores.
 
+**Total Produto = Σ(preço*quantidade)**
+**Total Transporte**
+**Total Imposto = Σ(ValorIVA)**
+
+valorIVA = preço*IVA
+
   - Cálculo do total da fatura de fornecedor ou de venda: As faturas, tanto de fornecedor quanto de venda, incluem o total faturado e o total de IVA, indicando a necessidade de regras de cálculo para estes campos.
+
+**Total Faturado = Σ(preço*quantidade)**
+**Total IVA = Σ(Valor IVA)**
