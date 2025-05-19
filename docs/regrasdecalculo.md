@@ -4,9 +4,9 @@
 
   #Cálculo do preço promocional dos produtos: Quando o gestor de marketing configura uma promoção, o sistema deve calcular automaticamente o preço promocional dos produtos. As fontes fornecem as fórmulas específicas para dois tipos de promoção:
 
-◦Para promoções percentuais: Preço Promocional = Preço Original - (Preço Original × Taxa de Desconto / 100).
+**Para promoções percentuais: Preço Promocional = Preço Original - (Preço Original × Taxa de Desconto / 100)-**
 
-◦Para promoções com valor fixo: Preço Promocional = Preço Original - Valor do Desconto.
+**Para promoções com valor fixo: Preço Promocional = Preço Original - Valor do Desconto.**
 
   #Cálculo do total da encomenda a fornecedor: A informação da encomenda a fornecedor inclui o total da encomenda e o total de IVA, o que implica regras de cálculo para chegar a estes valores.
 
