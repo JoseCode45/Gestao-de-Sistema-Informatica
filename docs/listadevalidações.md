@@ -1,6 +1,6 @@
 # LISTA DE VALIDAÇÕES
 
-# Todos os campos marcados como obrigatórios devem ser preenchidos:
+## Todos os campos marcados como obrigatórios devem ser preenchidos:
 -	Nome do cliente
 -	NIF
 -	Morada de entrega.
