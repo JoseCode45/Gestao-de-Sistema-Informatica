@@ -6,8 +6,8 @@ Preço Unitário pode conter descontos
 
 **Preço Final = Σ(Total Produto)+ Transporte + Impostos**
 **Total Produto = Preço Unitário × Quantidade**
-**Total Transporte = **
-**Total Imposto =  Σtotal dos impostos**
+**Total Transporte = (Valor) **
+**Total Imposto =  ΣImpostos**
 
 
   - Cálculo do preço promocional dos produtos: Quando o gestor de marketing configura uma promoção, o sistema deve calcular automaticamente o preço promocional dos produtos. As fontes fornecem as fórmulas específicas para dois tipos de promoção:
