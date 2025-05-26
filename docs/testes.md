@@ -1,5 +1,4 @@
-# TESTES 
-
+# Teste de Validação de campos
 ## Inserção de Encomenda ao Fornecedor
 - Campos obrigatórios: fornecedor, produtos, quantidades, data de entrega.
 - Fornecedor deve existir na base de dados.
