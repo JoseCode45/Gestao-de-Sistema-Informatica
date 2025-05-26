@@ -1,4 +1,4 @@
-## TESTES ULITÁRIOS
+## TESTES 
 |                          | Teste                                    | Objetivo                                                  | Validações Esperadas                                          | Tipo de Validação                 |
 | ------------------------ | ---------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
 | Gestão de Stock          | Inserção de encomenda ao fornecedor      | Verificar a criação de uma nova encomenda                 | Campos obrigatórios, fornecedor válido, produtos existentes   | Validação de campos e BD          |
