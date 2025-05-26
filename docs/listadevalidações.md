@@ -20,7 +20,7 @@
 -	O código de produto deve estar cadastrado e ativo.
 
 ## Ao criar uma encomenda, verificar se há stock suficiente para todos os produtos selecionados.
--	Se não houver, o sistema impede o envio do pedido ou sugere remover o item.
+-	Se não houver, o sistema impede o envio do pedido, remover o item e sugere escolher outro artigo.
 
 ## Operações como edição ou cancelamento só podem ser feitas se o registo estiver num determinado estado.
 -	Só é possível cancelar uma encomenda se ainda estiver “pendente”.
