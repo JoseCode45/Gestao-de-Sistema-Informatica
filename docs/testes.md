@@ -1,1 +1,13 @@
-
+## Gestão de stock
+|                          | Teste                                    | Objetivo                                                  | Validações Esperadas                                          | Tipo de Validação                 |
+| ------------------------ | ---------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
+| Gestão de Stock          | Inserção de encomenda a fornecedor       | Verificar a criação de uma nova encomenda                 | Campos obrigatórios, fornecedor válido, produtos existentes   | Validação de campos e BD          |
+|                          | Atualização após receção                 | Validar o registo de entrada no armazém                   | Verificação de quantidades e produtos entregues               | Validação de BD e cálculo         |
+| Processamento de Pedidos | Submissão de encomenda de cliente        | Validar a submissão correta e o número único de regist    | Produtos disponíveis, campos completos, morada válida         | Validação de campos, lógica e BD  |
+|                          | Validação final de stock                 | Impedir o pedido se não houver stock                      | Stock suficiente, estado atualizado                           | Validação de lógica e BD          |
+| Promoções e Marketing    | Criação de campanha promocional          | Validar as regras de aplicação do desconto                | Datas válidas, produto com stock, sem promoções em conflito   | Validação de cálculo e conflitos  |
+|                          | Finalização automática de promoção       | Confirmar o fim automático após a data definida           | Preço restaurado, promoção inativa                            | Validação de data e estado        |
+| Entregas                 | Processamento e expedição de encomenda   | Validar os dados da entrega e comunicação com a transportadora | Morada, horário, transportadora definidos                     | Validação de campos e API externa |
+|                          | Atualização via API de estado de entrega | Rastrear a entrega e atualizar o estado                   | Comunicação bem-sucedida com API, estados válidos             | Validação técnica e funcional     |
+| Ocorrências              | Registo de ocorrência pelo cliente       | Permitir o registo com o número da encomenda              | Validação do número, descrição preenchida, registo no sistema | Validação de campos e BD          |
+|                          | Resolução e atualização do estado        | Confirmar e registar a solução da ocorrência              | Alteração do estado, notificação ao cliente                   | Validação de estado e BD          |
