@@ -9,7 +9,7 @@
 
 ## Campos como datas, NIF, códigos postais, emails, etc., devem ter o formato correto.
 -	Email do cliente deve conter “@” e domínio válido.
--	NIF deve conter 9 dígitos numéricos.
+-	NIF deve conter 9 dígitos numéricos OBRIGATORIAMENTE.
 
 ## Números e datas têm que estar dentro de um intervalo permitido.
 -	Quantidade de produto ≥ 1.
