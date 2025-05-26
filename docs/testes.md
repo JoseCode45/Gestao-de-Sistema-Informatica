@@ -29,8 +29,8 @@
 - O registo de estado de entrega atualizado na base de dados.
 - Apenas o Gestor de Logística pode processar entregas.
 ## Registo de Ocorrência pelo Cliente
-- Número de encomenda deve existir.
-- Descrição da ocorrência é obrigatória.
-- Registo de ocorrência associado ao cliente e encomenda.
+- O número de encomenda deve existir.
+- A descrição da ocorrência é obrigatória.
+- O registo de ocorrência tem que estar associado ao cliente e a encomenda.
 - Validação de estado da ocorrência.
 - Disponível apenas para clientes autenticados.
