@@ -1,13 +1,37 @@
 ## TESTES 
-|                          | Teste                                    | Objetivo                                                  | Validações Esperadas                                          | Tipo de Validação                 |
-| ------------------------ | ---------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------------- | --------------------------------- |
-| Gestão de Stock          | Inserção de encomenda ao fornecedor      | Verificar a criação de uma nova encomenda                 | Campos obrigatórios, fornecedor válido, produtos existentes   | Validação de campos e BD          |
-|                          | Atualização após receção                 | Validar o registo de entrada no armazém                   | Verificação de quantidades e produtos entregues               | Validação de BD e cálculo         |
-| Processamento de Pedidos | Submissão da encomenda do cliente        | Validar a submissão correta e o número único de regist    | Produtos disponíveis, campos completos, morada válida         | Validação de campos, lógica e BD  |
-|                          | Validação final de stock                 | Impedir o pedido se não houver stock                      | Stock suficiente, estado atualizado                           | Validação de lógica e BD          |
-| Promoções e Marketing    | Criação de campanha promocional          | Validar as regras de aplicação do desconto                | Datas válidas, produto com stock, sem promoções em conflito   | Validação dos cálculo e  dosconflitos  |
-|                          | Finalização automática de promoção       | Confirmar o fim automático após a data definida           | Preço restaurado, promoção inativa                            | Validação da data e  do estado    |
-| Entregas                 | Processamento e expedição de encomenda   | Validar os dados da entrega e comunicação com a transportadora | Morada, horário, transportadora definidos                     | Validação de campos e API externa |
-|                          | Atualização via API de estado de entrega | Rastrear a entrega e atualizar o estado                   | Comunicação bem-sucedida com API, estados válidos             | Validação técnica e funcional     |
-| Ocorrências              | Registo de ocorrência pelo cliente       | Permitir o registo com o número da encomenda              | Validação do número, descrição preenchida, registo no sistema | Validação de campos e BD          |
-|                          | Resolução e atualização do estado        | Confirmar e registar a solução da ocorrência              | Alteração do estado, notificação ao cliente                   | Validação de estado e BD          |
+
+Inserção de Encomenda ao Fornecedor
+•	- Campos obrigatórios: fornecedor, produtos, quantidades, data de entrega.
+•	- Fornecedor deve existir na base de dados.
+•	- Produtos devem estar ativos e com códigos válidos.
+•	- Registo deve ser inserido corretamente na base de dados.
+•	- Apenas o Gestor de Compras pode aceder a esta funcionalidade.
+Atualização de Stock após Receção
+•	- Verificar se as quantidades entregues coincidem com as encomendadas.
+•	- Atualizar corretamente o stock na base de dados.
+•	- Registar o histórico da entrada.
+•	- Apenas o Responsável de Armazém pode aceder a esta funcionalidade.
+Submissão de Encomenda do Cliente
+•	- Verificar campos obrigatórios: nome, NIF, morada de entrega, produtos.
+•	- Validação do NIF (9 dígitos) e email (formato válido).
+•	- Cálculo do valor final com promoções, taxas e transporte.
+•	- Registo único na base de dados com número de encomenda.
+•	- Funcionalidade disponível a todos os clientes autenticados.
+Criação de Campanha Promocional
+•	- Datas válidas (início ≤ fim).
+•	- Produto deve estar disponível e não em outra promoção.
+•	- Cálculo correto do preço com desconto percentual ou fixo.
+•	- Promoção registada corretamente na base de dados.
+•	- Apenas o Gestor de Marketing pode aceder a esta funcionalidade.
+Processamento de Entregas
+•	- Dados obrigatórios: morada, horário, transportadora válida.
+•	- Transportadora deve operar no distrito do cliente.
+•	- Atualização do estado de entrega via API externa.
+•	- Registo de estado de entrega atualizado na base de dados.
+•	- Apenas o Gestor de Logística pode processar entregas.
+Registo de Ocorrência pelo Cliente
+•	- Número de encomenda deve existir.
+•	- Descrição da ocorrência é obrigatória.
+•	- Registo de ocorrência associado ao cliente e encomenda.
+•	- Validação de estado da ocorrência.
+•	- Disponível apenas para clientes autenticados.
