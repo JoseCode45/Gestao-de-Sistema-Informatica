@@ -48,5 +48,3 @@ View (React?) (Separado em FrontOffice e BackOffice, com integração de um CRM 
 ### Restrições do produto - *características que levam o sistema a não funcionar.*
       - Não funciona corretamente para mobile.
       - Algumas funcionalidades dependem totalmente da internet para funcionar (trailer dos filmes).
-
-test test
