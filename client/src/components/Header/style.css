@@ -1,0 +1,21 @@
+ul.navbar-nav a {
+  text-decoration: none;
+  margin: 0 10px 0 0;
+  color: #e0e0e0;
+  font-weight: bold;
+}
+
+ul.navbar-nav a:hover {
+  color: lightblue;
+   background-color: #606d7a !important
+}
+
+.bg-vini{
+  background-color: #6C1731 !important
+}
+
+
+.navbar .dropdown-menu {
+  background-color: #343a40; /* Match your navbar background */
+}
+

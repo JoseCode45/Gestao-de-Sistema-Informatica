@@ -1,0 +1,50 @@
+# Documento de Visão
+### Objetivo - O que o sistema fará?
+      - Aplicação Web feito para suportar as operações da ViniSI
+      - A aplicação permitirá agilizar a gestão e a distribuição de vinhos, garantindo rastreabilidade dos produtos e uma experiência melhorada ao cliente.
+      - A aplicação permitirá a encomenda a fornecedores, gestão do armazenamento, processamento dos pedidos dos clientes, criação de descontos e gestão de ocorrências.
+  
+### Escopo - Indicativo de onde pode ser usado:
+      - Gerir o inventário de vinhos em um armazem
+      - Processar pedidos via plataformas web
+      - Maior rastreabilidade das encomendas e entregas
+      - Faturação e stock automatizados
+        
+### Partes interessadas (stakeholders) - *Quem usará o sistema? Quem se beneficiará do sistema?*
+      - Clientes finais
+      - Parceiros comerciais da empresa
+
+### Equipa do projeto -
+      Desenvolvedores:
+      - Diogo Martins 2022123762 **EI**
+      - Guilherme Ribeiro 2022123762 **EI**
+      - Rafael Valadas 2022123762 **EI**
+      - José Pisco 60962 **EI**
+      - Sander Fracisco 60543 **EI**
+
+### Características do produto - *Lista de Funcionalidades*
+      - Interface Intuitiva
+      - Acesso rápido a informações
+      - Comunicação Facilitada
+      - Automação de Tarefas
+      - Digitalização dos Processos
+      - Gestão de Stock
+      - Gestão de Ocorrências
+      - Gestão de Promoções
+      - Processamento automático de pedidos
+      - Consultação do catálogo de vinhos, realizar pedidos e acompanhar entregas
+      - Gerir dados internos, inventários, faturação e gestão automatizados
+
+### Arquitetura de referencia - Desenho indicando componentes
+```
+Base de dados (Mysql) 
+\/
+Controller (Node.js?)
+\/
+View (React?) (Separado em FrontOffice e BackOffice, com integração de um CRM para gestão de clientes)
+```
+
+  
+### Restrições do produto - *características que levam o sistema a não funcionar.*
+      - Não funciona corretamente para mobile.
+      - Algumas funcionalidades dependem totalmente da internet para funcionar (trailer dos filmes).
