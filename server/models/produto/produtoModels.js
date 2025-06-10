@@ -9,7 +9,6 @@ export const produto = {
     FROM Produto
     INNER JOIN ProdutoStock ON Produto.ID = ProdutoStock.ProdutoID
     WHERE Produto.Estado = 'ativo' AND ProdutoStock.Quantidade > 0
-    ORDER BY Produto.PromocaoID DESC
   `);
     return rows;
   },
@@ -22,7 +21,6 @@ export const produto = {
       p.Nome,
       p.Preco,
       r.Nome AS RegiaoNome,
-      p.PromocaoID,
       uc.Nome AS CriadorNome,
       ua.Nome AS AlteradorNome,
       p.DataCriacao,
@@ -31,16 +29,51 @@ export const produto = {
       ps.Quantidade,
       ps.UltimaEntrada,
       ps.UltimaSaida,
-      a.Morada AS Armazem
+      a.Morada AS Armazem,
+      GROUP_CONCAT(c.Nome SEPARATOR ', ') AS Castas
     FROM Produto p
     LEFT JOIN Regiao r ON p.RegiaoID = r.ID
     LEFT JOIN ProdutoStock ps ON p.ID = ps.ProdutoID
     LEFT JOIN Armazem a ON ps.ArmazemID = a.ID
     LEFT JOIN Utilizador uc ON p.CriadorID = uc.ID
     LEFT JOIN Utilizador ua ON p.AlteradorID = ua.ID
+    LEFT JOIN ProdutoCasta pc ON p.ID = pc.ProdutoID
+    LEFT JOIN Casta c ON pc.CastaID = c.ID
+    GROUP BY p.ID
   `);
     return rows;
   },
+
+async getList() {
+  const [rows] = await pool.query(`
+    SELECT 
+      p.ID,
+      p.Nome,
+      p.Preco,
+      r.Nome AS RegiaoNome,
+      uc.Nome AS CriadorNome,
+      ua.Nome AS AlteradorNome,
+      p.DataCriacao,
+      p.DataAlteracao,
+      p.Estado,
+      ps.Quantidade,
+      ps.UltimaEntrada,
+      ps.UltimaSaida,
+      a.Morada AS Armazem,
+      GROUP_CONCAT(c.Nome SEPARATOR ', ') AS Castas
+    FROM Produto p
+    LEFT JOIN Regiao r ON p.RegiaoID = r.ID
+    LEFT JOIN ProdutoStock ps ON p.ID = ps.ProdutoID
+    LEFT JOIN Armazem a ON ps.ArmazemID = a.ID
+    LEFT JOIN Utilizador uc ON p.CriadorID = uc.ID
+    LEFT JOIN Utilizador ua ON p.AlteradorID = ua.ID
+    LEFT JOIN ProdutoCasta pc ON p.ID = pc.ProdutoID
+    LEFT JOIN Casta c ON pc.CastaID = c.ID
+    WHERE p.Estado = 'ativo'  -- Aqui o filtro que garante só produtos ativos
+    GROUP BY p.ID
+  `);
+  return rows;
+},
 
 
   async getById(id) {
@@ -58,8 +91,8 @@ export const produto = {
     await pool.query(
       `INSERT INTO ProdutoStock
        (ProdutoID, Quantidade, UltimaEntrada, UltimaSaida, ArmazemID, LocalArmazem, CriadorID, AlteradorID)
-       VALUES (?, 0, NULL, NULL, NULL, NULL, ?, ?)`,
-      [produtoID, armazemID, localArmazem, criadorID, criadorID]
+       VALUES (?, 0, NULL, NULL, 1, NULL, ?, ?)`,
+      [produtoID, criadorID, criadorID]
     );
     return result.insertId;
   },
@@ -78,13 +111,13 @@ export const produto = {
 
     try {
       //Verificar existência de promoções
-      const [promoRows] = await conn.query('SELECT ID FROM Promocao WHERE ID = ?', [PromocaoID]);
+      const [promoRows] = await pool.query('SELECT ID FROM Promocao WHERE ID = ?', [PromocaoID]);
       if (promoRows.length === 0) {
         return { success: false, message: 'Promoção não encontrada.' };
       }
 
       //Verificar existência de produtos
-      const [prodRows] = await conn.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
+      const [prodRows] = await pool.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
       if (prodRows.length === 0) {
         return { success: false, message: 'Produto não encontrado.' };
       }
@@ -101,13 +134,13 @@ export const produto = {
   async associarProdutoFornecedor(ProdutoID, FornecedorID) {
     try {
       //Verificar existência de promoções
-      const [promoRows] = await conn.query('SELECT ID FROM Fornecedor WHERE ID = ?', [FornecedorID]);
+      const [promoRows] = await pool.query('SELECT ID FROM Fornecedor WHERE ID = ?', [FornecedorID]);
       if (promoRows.length === 0) {
         return { success: false, message: 'Fornecedor não encontrado.' };
       }
 
       //Verificar existência de produtos
-      const [prodRows] = await conn.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
+      const [prodRows] = await pool.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
       if (prodRows.length === 0) {
         return { success: false, message: 'Produto não encontrado.' };
       }
@@ -124,13 +157,13 @@ export const produto = {
   async associarProdutoRegiao(ProdutoID, RegiaoID) {
     try {
       //Verificar existência de promoções
-      const [promoRows] = await conn.query('SELECT ID FROM Regiao WHERE ID = ?', [RegiaoID]);
+      const [promoRows] = await pool.query('SELECT ID FROM Regiao WHERE ID = ?', [RegiaoID]);
       if (promoRows.length === 0) {
         return { success: false, message: 'Regiao não encontrada.' };
       }
 
       //Verificar existência de produtos
-      const [prodRows] = await conn.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
+      const [prodRows] = await pool.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
       if (prodRows.length === 0) {
         return { success: false, message: 'Produto não encontrado.' };
       }
@@ -144,47 +177,52 @@ export const produto = {
   },
 
   //Associar produto a casta
+  // associarProdutoCasta.js
   async associarProdutoCasta(ProdutoID, CastaID) {
-
     try {
-      //Verificar existência de castas
-      const [promoRows] = await conn.query('SELECT ID FROM Casta WHERE ID = ?', [CastaID]);
-      if (promoRows.length === 0) {
+      // Usando apenas pool (certifique-se de que pool está importado corretamente)
+      const [castaRows] = await pool.query('SELECT ID FROM Casta WHERE ID = ?', [CastaID]);
+      if (castaRows.length === 0) {
         return { success: false, message: 'Casta não encontrada.' };
       }
 
-      //Verificar existência de produtos
-      const [prodRows] = await conn.query('SELECT ID FROM Produto WHERE ID = ?', [produtoID]);
-      if (prodRows.length === 0) {
+      const [produtoRows] = await pool.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
+      if (produtoRows.length === 0) {
         return { success: false, message: 'Produto não encontrado.' };
       }
 
       await pool.query(
-        'INSERT INTO ProdutoCasta (CastaID,ProdutoID) VALUES (?,?)', [CastaID, ProdutoID]);
+        'INSERT INTO ProdutoCasta (CastaID, ProdutoID) VALUES (?, ?)', [CastaID, ProdutoID]
+      );
+
+      return { success: true };
     } catch (err) {
-      console.error('Erro ao associar produto a casta: ', err);
+      console.error('Erro ao associar produto a casta: ', err.message, err.stack);
       return { success: false, message: 'Erro interno ao associar.' };
     }
   },
+
 
   //Desassociar produto de casta
   async desassociarProdutoCasta(ProdutoID, CastaID) {
 
     try {
       //Verificar existência de castas
-      const [promoRows] = await conn.query('SELECT ID FROM Casta WHERE ID = ?', [CastaID]);
+      const [promoRows] = await pool.query('SELECT ID FROM Casta WHERE ID = ?', [CastaID]);
       if (promoRows.length === 0) {
         return { success: false, message: 'Casta não encontrada.' };
       }
 
       //Verificar existência de produtos
-      const [prodRows] = await conn.query('SELECT ID FROM Produto WHERE ID = ?', [produtoID]);
+      const [prodRows] = await pool.query('SELECT ID FROM Produto WHERE ID = ?', [ProdutoID]);
       if (prodRows.length === 0) {
         return { success: false, message: 'Produto não encontrado.' };
       }
 
       await pool.query(
-        'DELETE FROM ProdutoCasta WHERE ProdutoID = ? AND CastaID = ?', [CastaID, ProdutoID]);
+        'DELETE FROM ProdutoCasta WHERE CastaID = ? AND ProdutoID = ?', [CastaID, ProdutoID]);
+
+      return { success: true };
     } catch (err) {
       console.error('Erro ao associar produto a promoção: ', err);
       return { success: false, message: 'Erro interno ao associar.' };
@@ -205,4 +243,22 @@ export const produto = {
     );
   },
 
+  async listarCastasProduto(produtoID) {
+    const [rows] = await pool.query(
+      `SELECT c.ID, c.Nome
+     FROM ProdutoCasta pc
+     JOIN Casta c ON pc.CastaID = c.ID
+     WHERE pc.ProdutoID = ? AND c.Estado = 'ativo'`,
+      [produtoID]
+    );
+    return rows;
+  },
+
+  async alterador(produtoID, alteradorID) {
+    const dataAlteracao = new Date();
+    await pool.query(
+      'UPDATE Produto SET AlteradorID = ?, DataAlteracao = ? WHERE ID = ?',
+      [alteradorID, dataAlteracao, produtoID]
+    );
+  }
 };

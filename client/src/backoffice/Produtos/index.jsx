@@ -99,13 +99,14 @@ const Produtos = () => {
       </div>
       <hr />
       <div className="table-container">
-        <table className="element table table-responsive table-hover table-striped">
+        <table className="element table table-responsive table-hover table-striped" style={{ tableLayout: 'auto'}}>
           <thead>
             <tr>
-              <th>ID</th>
+              <th><strong>ID</strong></th>
               <th>Nome</th>
               <th>Preco</th>
               <th>Região</th>
+              <th style={{width: '100px' }}>Castas</th>
               <th>Quantidade</th>
               <th>Últ. Entrada</th>
               <th>Últ. Saída</th>
@@ -114,17 +115,18 @@ const Produtos = () => {
               <th>Alterado por</th>
               <th>Data Criação</th>
               <th>Última Alteração</th>
-              <th>Estado</th>
-              <th>Ações</th>
+              <th style={{width: '100px' }}>Estado</th>
+              <th> <Link to="/admin/produto/criar" className='btn btn-outline-primary button-sucess w-40 rounded-0'>NOVO</Link></th>
             </tr>
           </thead>
           <tbody>
             {currentData.map((produto) => (
               <tr key={produto.ID}>
-                <td>{produto.ID}</td>
+                <td><strong>{produto.ID}</strong></td>
                 <td>{produto.Nome}</td>
                 <td>{produto.Preco} €</td>
                 <td>{produto.RegiaoNome || 'N/A'}</td>
+                <td style={{ fontSize: '0.75rem' }}>{produto.Castas ? produto.Castas : 'N/A'}</td>
                 <td>{produto.Quantidade ?? '0'}</td>
                 <td>{produto.UltimaEntrada ? new Date(produto.UltimaEntrada).toLocaleString() : 'N/A'}</td>
                 <td>{produto.UltimaSaida ? new Date(produto.UltimaSaida).toLocaleString() : 'N/A'}</td>

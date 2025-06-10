@@ -21,7 +21,7 @@ router.get('/:id', async (req, res) => {
 
 // Adicionar Casta
 router.post('/', async (req, res) => {
-  criadorID = req.user.id;
+  const criadorID = req.user.id;
   const { nome } = req.body;
   const id = await Casta.create(nome, criadorID);
   res.status(201).json({ id });
@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
 
 // Atualizar Casta
 router.put('/:id', async (req, res) => {
-  alteradorID = req.user.id; 
+  const alteradorID = req.user.id; 
   const {nome} = req.body;
   await Casta.update(req.params.id, nome, alteradorID);
   res.json({ message: 'Casta atualizada' });

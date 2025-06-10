@@ -5,7 +5,7 @@ import axios from 'axios';
 import { BASE_URL } from '../../components/url';
 import { Link } from 'react-router-dom';
 
-const ArmazemCreate = () => {
+const ProdutoCreate = () => {
     const navigate = useNavigate();
     const [form, setForm] = useState({ Morada: '', AreaM2: '' });
 
@@ -70,4 +70,4 @@ const ArmazemCreate = () => {
     );
 };
 
-export default ArmazemCreate;
+export default ProdutoCreate;

@@ -13,25 +13,26 @@ router.get('/', async (req, res) => {
 });
 
 //Criar promoção
-router.post('/', authorizeRole('Técnico/a Marketing e Comunicação'), async (req, res) => {
-  try{
-    const {dataInicio, dataValidade, descontoTipo, valor, motivo, estadoID} = req.body;
+// Adicionar Promocao
+router.post('/', async (req, res) => {
+  try {
     const criadorID = req.user.id;
+    const { dataInicio, dataValidade, descontoTipo, descontoValor, motivo } = req.body;
 
-    // Validação de datas
     if (new Date(dataInicio) >= new Date(dataValidade)) {
       return res.status(400).json({ erro: 'Data de início deve ser anterior à data de validade.' });
     }
 
-    const promocaoID = await Promocao.create(
-      dataInicio, dataValidade, descontoTipo, valor, motivo, estadoID, criadorID
-    );
+    const valor = Number(descontoValor);
+    if (isNaN(valor)) {
+      return res.status(400).json({ erro: 'Valor do desconto inválido.' });
+    }
 
-    //
-    res.status(201).json({ mensagem: 'Promoção criada e aplicada com sucesso.' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao criar a promoção.' });
+    const result = await Promocao.create(dataInicio, dataValidade, descontoTipo, valor, motivo, criadorID);
+    res.status(201).json({ result });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro interno do servidor.' });
   }
 });
 
@@ -44,22 +45,11 @@ router.get('/:id', async (req, res) => {
   res.json(result);
 });
 
-// Adicionar Promocao
-router.post('/', async (req, res) => {
-  criadorID = req.user.id;
-  const { dataInicio, dataValidade, descontoTipo, descontoValor, motivo } = req.body;
 
-      if (new Date(dataInicio) >= new Date(dataValidade)) {
-      return res.status(400).json({ erro: 'Data de início deve ser anterior à data de validade.' });
-    }
-
-  const result = await Promocao.create(dataInicio, dataValidade, descontoTipo, descontoValor, motivo, criadorID);
-  res.status(201).json({ result });
-});
 
 // Atualizar Promocao
-router.put('/:id', authorizeRole('Técnico/a Marketing e Comunicação'), async (req, res) => {
-  alteradorID = req.user.id; 
+router.put('/:id', async (req, res) => {
+  const alteradorID = req.user.id; 
   const {dataInicio, dataValidade, descontoTipo, descontoValor, motivo} = req.body;
 
       // Validação de datas
@@ -69,6 +59,55 @@ router.put('/:id', authorizeRole('Técnico/a Marketing e Comunicação'), async 
 
   await Promocao.update(req.params.id, dataInicio, dataValidade, descontoTipo, descontoValor, motivo, alteradorID);
   res.json({ message: 'Promocao atualizada' });
+});
+
+
+// PUT /promocao/:id/produtos, Substituir todos os produtos da promocao pelos produtos selecionados.
+router.put('/:id/produtos', async (req, res) => {
+  const promocaoID = Number(req.params.id);
+  const alteradorID = req.user.id;
+  const { produtos } = req.body;
+
+  if (!Array.isArray(produtos)) {
+    return res.status(400).json({ message: 'Campo "produtos" deve ser um array de IDs.' });
+  }
+
+  try {
+    // 1. Desassociar produtos atuais da promocao
+    const produtosAtuais = await Promocao.listarProdutosPromocao(promocaoID);
+    for (const produto of produtosAtuais) {
+      await Promocao.desassociarProdutoPromocao(promocaoID, produto.ID);
+    }
+
+    // 2. Associar novos produtos
+    for (const produtoID of produtos) {
+      const result = await Promocao.associarProdutoPromocao(promocaoID, produtoID);
+      if (!result.success) {
+        return res.status(400).json({ message: `Erro ao associar produto ID ${produtoID}: ${result.message}` });
+      }
+    }
+
+    // 3. Atualizar alterador e data
+    await Promocao.atualizarAlterador(promocaoID, alteradorID);
+
+    res.json({ message: 'Produtos associados ao Promocao com sucesso.' });
+  } catch (err) {
+    console.error('Erro ao atualizar produtos do Promocao:', err);
+    res.status(500).json({ message: 'Erro interno ao atualizar produtos.' });
+  }
+});
+
+//Obter lista de produtos de uma promocao
+router.get('/:id/produtos', async (req, res) => {
+  const promocaoID = req.params.id;
+
+  try {
+    const produtos = await Promocao.listar(promocaoID);
+    res.json(produtos);
+  } catch (err) {
+    console.error('Erro ao buscar produtos do Promocao:', err);
+    res.status(500).json({ message: 'Erro interno ao buscar produtos do Promocao.' });
+  }
 });
 
 // Desativar Promocao

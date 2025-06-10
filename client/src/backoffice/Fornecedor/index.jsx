@@ -108,12 +108,13 @@ const Fornecedor = () => {
               <th>Morada</th>
               <th>NIF</th>
               <th>Responsável</th>
+              <th style={{width: '100px' }}>Produtos</th>
               <th>Criado por</th>
               <th>Alterado por</th>
               <th>Data Criação</th>
               <th>Última Alteração</th>
               <th>Estado</th>
-              <th>Ações</th>
+              <th><Link to={`/admin/fornecedor/criar`} className='btn btn-outline-dark w-40 rounded-0'>NOVO</Link></th>
             </tr>
           </thead>
           <tbody>
@@ -124,6 +125,7 @@ const Fornecedor = () => {
                 <td>{fornecedor.Morada}</td>
                 <td>{fornecedor.NIF}</td>
                 <td>{fornecedor.Responsavel}</td>
+                <td style={{ fontSize: '0.75rem' }}>{fornecedor.Produtos ? fornecedor.Produtos : 'N/A'}</td>
                 <td>{fornecedor.CriadorNome || "N/A"}</td>
                 <td>{fornecedor.AlteradorNome || "N/A"}</td>
                 <td>{new Date(fornecedor.DataCriacao).toLocaleString()}</td>
@@ -138,9 +140,7 @@ const Fornecedor = () => {
                   </button>
                 </td>
                 <td className="text-center align-middle">
-                  <Link to={`/admin/fornecedor/edit/${fornecedor.ID}`} className='btn btn-outline-dark w-40 rounded-0'>
-                    EDIT
-                  </Link>
+                  <Link to={`/admin/fornecedor/edit/${fornecedor.ID}`} className='btn btn-outline-dark w-40 rounded-0'>EDIT</Link>
                 </td>
               </tr>
             ))}

@@ -8,12 +8,21 @@ import ClienteFatura from '../ClienteFatura';
 import Ocorrencia from '../Ocorrencia';
 import NotFound from '../../components/NotFound';
 import Empregado from '../Empregado';
+
 import Produtos from '../Produtos';
 import ProdutoEdit from '../Produtos/edit';
+import ProdutoCreate from '../Produtos/create';
+
 import Promocoes from '../Promocoes';
+import PromocoesEdit from '../Promocoes/edit';
+import PromocoesCreate from '../Promocoes/create';
+
 import AdminSidebar from '../../components/SideBar';
 
-import Fornecedor from '../Fornecedor';
+import Fornecedor from '../Fornecedor'
+import FornecedorEdit from '../Fornecedor/edit';
+import FornecedorCreate from '../Fornecedor/create';
+;
 import FornecedorEncomenda from '../FornecedorEncomenda';
 import FornecedorFatura from '../FornecedorFatura';
 
@@ -44,11 +53,21 @@ const Admin = () => {
         <Route path="clientefatura" element={<ClienteFatura />} />
         <Route path="ocorrencia" element={<Ocorrencia />} />
         <Route path="empregado" element={<Empregado />} />
+
         <Route path="produto" element={<Produtos />} />
-        <Route path="produto/edit/:id" element={<ProdutoEdit />} />                
-        <Route path="promocoes" element={<Promocoes />} />      
+        <Route path="produto/criar" element={<ProdutoCreate />} />  
+        <Route path="produto/edit/:id" element={<ProdutoEdit />} />  
+
+        <Route path="promocoes" element={<Promocoes />} />   
+        <Route path="promocoes/criar" element={<PromocoesCreate/>} />   
+        <Route path="promocoes/edit/:id" element={<PromocoesEdit/>} />   
+
         <Route path="*" element={<NotFound />} />
+
         <Route path="fornecedor" element={<Fornecedor/>}/>
+        <Route path="fornecedor/criar" element={<FornecedorCreate />} />  
+        <Route path="fornecedor/edit/:id" element={<FornecedorEdit />} />  
+
         <Route path="fornecedorencomenda" element={<FornecedorEncomenda/>}/>
         <Route path="fornecedorfatura" element={<FornecedorFatura/>}/>
         <Route path="armazem" element={<Armazem/>}/>
