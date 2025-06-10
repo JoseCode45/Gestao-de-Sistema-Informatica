@@ -1,0 +1,5 @@
+table.table.table-bordered.selec th,
+table.table.table-bordered.selec td {
+  width: auto !important;
+
+}

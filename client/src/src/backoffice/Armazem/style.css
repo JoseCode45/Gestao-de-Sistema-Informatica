@@ -1,0 +1,29 @@
+.teste{
+ color: blue; 
+}
+
+
+
+.table-container {
+  margin-left: 20re;
+  display: flex;
+  justify-content: flex-end;
+    box-sizing: border-box;
+  width: 100%;
+}
+
+table {
+  table-layout:fixed;
+  width: 100%;
+  word-wrap: break-word;
+}
+
+/* 
+.fixd{
+    position: fixed;
+    background-color: white;
+      top: 0; 
+  width: 65%; 
+}
+
+*/

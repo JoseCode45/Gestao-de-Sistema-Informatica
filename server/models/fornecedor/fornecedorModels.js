@@ -6,7 +6,7 @@ export const Fornecedor = {
     const [rows] = await pool.query(`
     SELECT 
       f.ID, f.Nome, f.Morada, f.NIF, f.Responsavel, f.CriadorID,
-      uc.Nome AS CriadorNome, f.AlteradorID, ua.Nome AS AlteradorNome, f.DataCriacao, f.DataAlteracao, GROUP_CONCAT(pr.Nome SEPARATOR ', ') AS Produtos, f.Estado
+      uc.Nome AS CriadorNome, f.AlteradorID, ua.Nome AS AlteradorNome, f.DataCriacao, f.DataAlteracao, GROUP_CONCAT(p.Nome SEPARATOR ', ') AS Produtos, f.Estado
     FROM Fornecedor f
     LEFT JOIN Utilizador uc ON f.CriadorID = uc.ID
     LEFT JOIN Utilizador ua ON f.AlteradorID = ua.ID
