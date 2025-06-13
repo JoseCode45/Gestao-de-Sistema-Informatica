@@ -15,25 +15,26 @@ router.get('/', async (req, res) => {
 
 // Obter Transporte por ID
 router.get('/:id', async (req, res) => {
-  const Transportes = await Transporte.getById(req.params.id);
-  if (!Transportes) return res.status(404).json({ error: 'Transporte não encontrada' });
-  res.json(Transportes);
+  const transportes = await Transporte.getById(req.params.id);  
+  if (!transportes) return res.status(404).json({ error: 'Transporte não encontrada' });
+  res.json(transportes);
 });
 
 // Adicionar Transporte
 router.post('/', async (req, res) => {
-  criadorID = req.user.id;
-  const { nome, dataSaida, dataEntrega, custo, clienteEncomendaID, fornecedorEncomendaID, transportadoraID } = req.body;
-  const id = await Transporte.create(nome, dataSaida, dataEntrega, custo, clienteEncomendaID, fornecedorEncomendaID, transportadoraID,  criadorID);
+  const criadorID = req.user.id;
+  const { dataSaida, dataEntrega, custoTotal, clienteEncomendaID, fornecedorEncomendaID, transportadoraID } = req.body;
+  const id = await Transporte.create(dataSaida, dataEntrega, custoTotal, clienteEncomendaID || null, fornecedorEncomendaID || null, transportadoraID, criadorID);
   res.status(201).json({ id });
 });
 
 // Atualizar Transporte
 router.put('/:id', async (req, res) => {
-  alteradorID = req.user.id; 
-  const {id, nome, dataSaida, dataEntrega, custo, clienteEncomendaID, fornecedorEncomendaID, transportadoraID} = req.body;
-  await Transporte.update(id, nome, dataSaida, dataEntrega, custo, clienteEncomendaID, fornecedorEncomendaID, transportadoraID, alteradorID);
-  res.json({ message: 'Transporte atualizada' });
+  const alteradorID = req.user.id;
+  const id = req.params.id;
+  const {dataSaida, dataEntrega, custoTotal, clienteEncomendaID, fornecedorEncomendaID, transportadoraID, estadoID} = req.body;
+  await Transporte.update(id, dataSaida, dataEntrega, custoTotal, clienteEncomendaID || null, fornecedorEncomendaID || null, transportadoraID, estadoID, alteradorID);
+  res.json({ message: 'Transporte atualizado' });
 });
 
 // Desativar Transporte

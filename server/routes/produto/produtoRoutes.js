@@ -6,6 +6,12 @@ import authorizeRole from '../../services/authorizeRole.js';
 
 router.use(authenticateToken);
 
+//Obter todos os produtos vendiveis
+router.get('/disponivel', async (req, res) => {
+  const produtos = await produto.MostrarProdutos();
+  res.json(produtos);
+});
+
 // GET /produto/
 router.get('/', async (req, res) => {
   const produtos = await produto.getAll();

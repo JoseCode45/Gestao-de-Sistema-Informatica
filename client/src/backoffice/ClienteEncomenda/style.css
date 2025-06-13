@@ -1,3 +1,7 @@
 .teste{
  color: blue; 
 }
+
+.cliente-encomenda-table {
+  transform: translateX(150px);
+}

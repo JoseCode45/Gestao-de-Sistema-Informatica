@@ -6,6 +6,15 @@ import authorizeRole from '../../services/authorizeRole.js';
 
 router.use(authenticateToken);
 
+//Obter Produtos por ID de Encomenda
+router.get('/encomenda/:id', async (req, res) => {
+  const encomendaID = req.params.id;
+  const produtos = await ClienteEncomendaProdutos.getUserEncomenda(encomendaID);
+  if (!produtos) return res.status(404).json({ error: 'ClienteEncomendaProdutos não encontrada' });
+  res.json(produtos);
+});
+
+
 // Obter todas as ClienteEncomendaProdutoss
 router.get('/', async (req, res) => {
   const ClienteEncomendaProdutoss = await ClienteEncomendaProdutos.getAll();

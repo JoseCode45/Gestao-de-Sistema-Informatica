@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './style.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.js';
+
 import { BASE_URL } from '../../components/url';
 
-const Transporte = () => {
+const Ocorrencia = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
 
   const token = localStorage.getItem('token');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
@@ -19,7 +21,7 @@ const Transporte = () => {
   const itemsPerPage = 10;
 
   useEffect(() => {
-    axios.get(`${BASE_URL}/transporte`, {
+    axios.get(`${BASE_URL}/ocorrencia/user`, {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -29,101 +31,100 @@ const Transporte = () => {
         setLoading(false);
       })
       .catch(err => {
-        console.error("Erro ao carregar distritos:", err);
-        setError("Erro ao carregar distritos.");
+        console.error("Erro ao carregar ocorrências:", err);
+        setError("Erro ao carregar dados.");
         setLoading(false);
       });
   }, []);
 
-
-  const filteredData = data.filter((transporte) =>
-    transporte.CustoTotal?.toLowerCase().includes(search.toLowerCase()) ||
-    transporte.CriadorNome?.toLowerCase().includes(search.toLowerCase()) ||
-    transporte.AlteradorNome?.toLowerCase().includes(search.toLowerCase()) ||
-    transporte.ID.toString().includes(search)
-  );
-
-    const getEstadoColorClass = (estadoId) => {
+  const getEstadoColorClass = (estadoId) => {
     switch (estadoId) {
       case 1:
-        return 'btn-warning';      // Iniciando
+        return 'btn-warning';      // Pendente
       case 2:
-        return 'btn-primary';      // Em Trânsito
+        return 'btn-primary';      // Em Análise
       case 3:
-        return 'btn-success';         // Concluido
+        return 'btn-info';         // Em reposição
       case 4:
-        return 'btn-dark';    // Cancelado
+        return 'btn-secondary';    // Crédito Emitido
+      case 5:
+        return 'btn-success';      // Resolvido
       default:
-        return 'btn-dark';         
+        return 'btn-dark';         // Cancelado
     }
   };
 
+  const filteredData = data.filter((oc) =>
+    oc.Motivo?.toLowerCase().includes(search.toLowerCase()) ||
+    oc.Descricao?.toLowerCase().includes(search.toLowerCase()) ||
+    oc.RegistouNome?.toLowerCase().includes(search.toLowerCase()) ||
+    oc.ResolveuNome?.toLowerCase().includes(search.toLowerCase()) ||
+    oc.ID.toString().includes(search)
+  );
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentData = filteredData.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  if (loading) return <p>A carregar distritos...</p>;
+  if (loading) return <p>A carregar dados...</p>;
   if (error) return <p>{error}</p>;
 
   return (
     <>
+    <br></br>
       <div className="fixd d-flex justify-content-between align-items-center mb-3">
-        <h1>Transportes</h1>
+        <h1>Ocorrências</h1>
         <div className="form-outline flex-grow-1 mx-3">
-          <input
-            type="search"
-            className="form-control"
-            placeholder="Pesquisa"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="search" className="form-control" placeholder="Pesquisa" value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        <Link to="/admin" className="btn btn-outline-secondary">Voltar</Link>
+        <Link to="/" className="btn btn-outline-secondary">Voltar</Link>
       </div>
       <hr />
       <div className="table-container">
         <table className="element table table-responsive table-hover table-striped">
           <thead>
             <tr>
-              <th><strong>ID</strong></th>
-              <th>Data de Saída</th>
-              <th>Data de Entrega</th>
-              <th>Custo Total</th>
-              <th>Encomenda</th>
-              <th>Transportadora</th>
-              <th>Criador</th>
-              <th>Alterador</th>
-              <th>Data Criação</th>
-              <th>Última Alteração</th>
+              <th>ID</th>
+              <th>Data Registo</th>
+              <th>Data Resolução</th>
+              <th>Motivo</th>
+              <th>Descrição</th>
+              <th>Registou</th>
+              <th>Resolveu</th>
+              <th>Solucao</th>
               <th>Estado</th>
-              <th><Link to={`/admin/transporte/criar`} className='btn btn-outline-dark w-40 rounded-0'>NOVO</Link></th>
+              <th><Link to={`/ocorrencia/criar`} className='btn btn-danger w-40 rounded-0'>NOVA OCORRENCIA</Link></th>
             </tr>
           </thead>
           <tbody>
-            {currentData.map((transporte) => (
-              <tr key={transporte.ID}>
-                <td><strong>{transporte.ID}</strong></td>
-                <td>{new Date(transporte.DataSaida).toLocaleString()}</td>
-                <td>{transporte.DataEntrega ? new Date(transporte.DataEntrega).toLocaleString() : "--"}</td>
-                <td>{transporte.CustoTotal}</td>
-                <td>{transporte.ClienteEncomendaID} {transporte.FornecedorEncomendaID} <strong>{transporte.FornecedorEncomendaID? 'Fornecedor' : 'Cliente'}</strong></td>
-                <td>{transporte.TransportadoraID}</td>
-                <td>{transporte.CriadorID} {transporte.CriadorNome || "N/A"}</td>
-                <td>{transporte.AlteradorID} {transporte.AlteradorNome || "N/A"}</td>
-                <td>{new Date(transporte.DataCriacao).toLocaleString()}</td>
-                <td>{new Date(transporte.DataAlteracao).toLocaleString()}</td>
+            {currentData.map((oc) => (
+              <tr key={oc.ID}>
+                <td>{oc.ID}</td>
+                <td>{new Date(oc.DataRegisto).toLocaleString()}</td>
+                <td>{oc.DataResolucao ? new Date(oc.DataResolucao).toLocaleString() : '---'}</td>
+                <td>{oc.Motivo}</td>
+                <td>{oc.Descricao}</td>
+                <td>{oc.RegistouID} {oc.NomeRegistou || "N/A"}</td>
+                <td>{oc.ResolveuID ? `${oc.ResolveuID} ${oc.NomeResolveu || "N/A"}` : '---'}</td>
+                <td>{oc.Solucao}</td>
                 <td className="text-center align-middle">
                   <button
-                    className={`btn btn-sm ${getEstadoColorClass(transporte.EstadoID)}`}
+                    className={`btn btn-sm ${getEstadoColorClass(oc.EstadoID)}`}
                     style={{ width: '90px' }}
                   >
-                    {transporte.EstadoTransporte}
+                    {oc.EstadoOcorrencia}
                   </button>
                 </td>
                 <td className="text-center align-middle">
-                  <Link to={`/admin/transporte/edit/${transporte.ID}`} className='btn btn-outline-dark w-40 rounded-0'>EDIT</Link>
+                  <button
+                    className='btn btn-outline-dark rounded-0'
+                    onClick={async () => {
+                      navigate(`/ocorrencia/view/${oc.ID}`);
+                    }}
+                  >
+                    Visualizar
+                  </button>
                 </td>
               </tr>
             ))}
@@ -162,4 +163,4 @@ const Transporte = () => {
   );
 };
 
-export default Transporte;
+export default Ocorrencia;

@@ -104,7 +104,13 @@ const PromocaoEdit = () => {
       navigate('/admin/promocoes');
     } catch (error) {
       console.error('Erro ao atualizar promoção:', error);
-      alert('Erro ao atualizar promoção.');
+
+      if (error.response && error.response.data && error.response.data.erro) {
+        alert(`Erro: ${error.response.data.erro}`);
+      } else {
+        alert('Erro ao atualizar promoção.');
+      }
+
       setSaving(false);
     }
   };
@@ -167,9 +173,9 @@ const PromocaoEdit = () => {
             onChange={handleChange}
             required
           >
-<option value="">Selecione o tipo</option>
-<option value="percentual">Percentual (%)</option>
-<option value="fixo">Fixo (valor absoluto)</option>
+            <option value="">Selecione o tipo</option>
+            <option value="percentual">Percentual (%)</option>
+            <option value="fixo">Fixo (valor absoluto)</option>
           </select>
         </div>
 

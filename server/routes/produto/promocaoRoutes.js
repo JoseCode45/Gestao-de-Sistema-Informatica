@@ -23,6 +23,10 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ erro: 'Data de início deve ser anterior à data de validade.' });
     }
 
+    if (descontoValor < 0) {
+      return res.status(400).json({ erro: 'Um desconto deve ter valor positivo.' });
+    } 
+
     const valor = Number(descontoValor);
     if (isNaN(valor)) {
       return res.status(400).json({ erro: 'Valor do desconto inválido.' });
@@ -56,6 +60,14 @@ router.put('/:id', async (req, res) => {
     if (new Date(dataInicio) >= new Date(dataValidade)) {
       return res.status(400).json({ erro: 'Data de início deve ser anterior à data de validade.' });
     }
+
+    if (descontoValor < 0) {
+      return res.status(400).json({ erro: 'Um desconto deve ter valor positivo.' });
+    } 
+
+    if (descontoValor > 100 && descontoTipo == 'percentual') {
+      return res.status(400).json({ erro: 'Um desconto percentual deve ser menor que 100%.' });
+    } 
 
   await Promocao.update(req.params.id, dataInicio, dataValidade, descontoTipo, descontoValor, motivo, alteradorID);
   res.json({ message: 'Promocao atualizada' });

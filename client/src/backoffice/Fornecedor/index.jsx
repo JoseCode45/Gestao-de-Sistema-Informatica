@@ -122,8 +122,8 @@ const Fornecedor = () => {
               <tr key={fornecedor.ID}>
                 <td>{fornecedor.ID}</td>
                 <td>{fornecedor.Nome}</td>
-                <td>{fornecedor.Morada}</td>
                 <td>{fornecedor.NIF}</td>
+                <td>{fornecedor.Morada}</td>
                 <td>{fornecedor.Responsavel}</td>
                 <td style={{ fontSize: '0.75rem' }}>{fornecedor.Produtos ? fornecedor.Produtos : 'N/A'}</td>
                 <td>{fornecedor.CriadorNome || "N/A"}</td>

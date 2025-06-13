@@ -8,8 +8,8 @@ router.use(authenticateToken);
 
 // Obter todas as Distritos
 router.get('/', async (req, res) => {
-  const Distritos = await Distritos.getAll();
-  res.json(Distritos);
+  const result = await Distritos.getAll();
+  res.json(result);
 });
 
 // Obter Distritos por ID

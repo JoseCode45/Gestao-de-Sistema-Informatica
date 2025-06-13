@@ -3,7 +3,7 @@ import pool from '../../database.js';
 
 export const FornecedorEncomenda = {
   async getAll() {
-    const [rows] = await pool.query('SELECT * FROM FornecedorEncomenda WHERE Estado = "ativo"');
+    const [rows] = await pool.query('SELECT * FROM FornecedorEncomenda');
     return rows;
   },
 

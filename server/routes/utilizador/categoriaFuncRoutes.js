@@ -12,6 +12,8 @@ router.get('/', async (req, res) => {
   res.json(categoriaFunc);
 });
 
+
+
 // Obter CategoriaFunc por ID
 router.get('/:id', async (req, res) => {
   const CategoriaFunc = await CategoriaFunc.getById(req.params.id);
@@ -21,7 +23,7 @@ router.get('/:id', async (req, res) => {
 
 // Adicionar CategoriaFunc
 router.post('/', async (req, res) => {
-  criadorID = req.user.id;
+  const criadorID = req.user.id;
   const { nome } = req.body;
   const id = await CategoriaFunc.create(nome, criadorID);
   res.status(201).json({ id });

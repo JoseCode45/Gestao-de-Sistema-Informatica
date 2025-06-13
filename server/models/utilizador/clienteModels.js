@@ -12,6 +12,19 @@ export const Cliente = {
     return rows;
   },
 
+  // Retorna lista de clientes ativos com seus nomes
+async listarClientesAtivos() {
+  const [clientes] = await pool.query(`
+    SELECT 
+      Cliente.ID, 
+      Utilizador.Nome 
+    FROM Cliente
+    INNER JOIN Utilizador ON Cliente.UtilizadorID = Utilizador.ID
+    WHERE Cliente.Estado = 'ativo'
+  `);
+  return clientes;
+},
+
   async getById(id) {
     const [rows] = await pool.query('SELECT * FROM Cliente WHERE ID = ?', [id]);
     return rows[0];

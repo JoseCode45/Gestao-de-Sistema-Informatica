@@ -12,12 +12,25 @@ router.get('/', async (req, res) => {
   res.json(result);
 });
 
+// Obter lista de clientes detalhada
+router.get('/lista', async (req, res) => {
+  try {
+    const clientes = await Cliente.listarClientesAtivos();
+    res.json(clientes);
+  } catch (err) {
+    console.error('Erro ao obter lista de clientes:', err);
+    res.status(500).json({ erro: 'Erro ao buscar clientes.' });
+  }
+});
+
 // Obter Cliente por ID
 router.get('/:id', async (req, res) => {
   const result = await Cliente.getById(req.params.id);
   if (!result) return res.status(404).json({ error: 'Cliente não encontrada' });
   res.json(result);
 });
+
+
 
 // Adicionar Cliente
 router.post('/', async (req, res) => {

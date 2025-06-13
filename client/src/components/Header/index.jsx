@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { getUserFromToken} from '../../services/auth';
+
 import './style.css';
 
 const Header = () => {
@@ -19,9 +20,9 @@ const Header = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token'); //Remove o token quando o utilizador dá logout
+    localStorage.clear(); // Limpa o local storage
     setUser(null); //Reseta o estado do utilizador.
-    navigate('/login');
+    navigate('/login'); //Volta para a página de login
     window.location.reload();
   };
 
@@ -104,6 +105,8 @@ const Header = () => {
                   {users && (
                     <>
                     <li><NavLink className="dropdown-item" to="/carrinho">Carrinho</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/ocorrencia">Ocorrencias</NavLink></li>
+                    <li><NavLink className="dropdown-item" to="/encomendas">Encomendas</NavLink></li>
                     <li>  <a href="#" className="dropdown-item" onClick={handleLogout}>Logout</a></li>
                     </>
                   )}
