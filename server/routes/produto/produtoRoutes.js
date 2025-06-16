@@ -24,6 +24,13 @@ router.get('/lista', async (req, res) => {
   res.json(produtos);
 });
 
+// GET /produto/ de fornecedor ativos
+router.get('/fornecedor/:id', async (req, res) => {
+  const id = req.params.id;
+  const produtos = await produto.getListFornecedor(id);
+  res.json(produtos);
+});
+
 // GET /produto/:id
 router.get('/:id', async (req, res) => {
   const result = await produto.getById(req.params.id);

@@ -6,7 +6,16 @@ import authorizeRole from '../../services/authorizeRole.js';
 
 router.use(authenticateToken);
 
-// Obter todas as FornecedorEncomendaProdutos
+//Obter Produtos por ID de Encomenda
+router.get('/encomenda/:id', async (req, res) => {
+  const encomendaID = req.params.id;
+  const produtos = await FornecedorEncomendaProdutos.getUserEncomenda(encomendaID);
+  if (!produtos) return res.status(404).json({ error: 'FornecedorEncomendaProdutos não encontrada' });
+  res.json(produtos);
+});
+
+
+// Obter todas as FornecedorEncomendaProdutoss
 router.get('/', async (req, res) => {
   const result = await FornecedorEncomendaProdutos.getAll();
   res.json(result);
@@ -21,7 +30,7 @@ router.get('/:id', async (req, res) => {
 
 // Adicionar FornecedorEncomendaProdutos
 router.post('/', async (req, res) => {
-  criadorID = req.user.id;
+  const criadorID = req.user.id;
   const { nome } = req.body;
   const id = await FornecedorEncomendaProdutos.create(nome, criadorID);
   res.status(201).json({ id });
@@ -29,7 +38,7 @@ router.post('/', async (req, res) => {
 
 // Atualizar FornecedorEncomendaProdutos
 router.put('/:id', async (req, res) => {
-  alteradorID = req.user.id; 
+  const alteradorID = req.user.id; 
   const {nome} = req.body;
   await FornecedorEncomendaProdutos.update(req.params.id, nome, alteradorID);
   res.json({ message: 'FornecedorEncomendaProdutos atualizada' });

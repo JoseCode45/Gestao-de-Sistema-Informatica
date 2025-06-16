@@ -50,17 +50,17 @@ const Header = () => {
             <ul className="navbar-nav me-auto mb-2 mb-md-0">
               <li className="nav-item">
                 <NavLink className="nav-link" to="/">
-                  Home
+                  Início
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/about">
-                  About
+                  Sobre nós
                 </NavLink>
               </li>
               <li className="nav-item">
                 <NavLink className="nav-link" to="/contact">
-                  Contact
+                  Contactos
                 </NavLink>
               </li>
             </ul>
@@ -104,7 +104,6 @@ const Header = () => {
                   
                   {users && (
                     <>
-                    <li><NavLink className="dropdown-item" to="/carrinho">Carrinho</NavLink></li>
                     <li><NavLink className="dropdown-item" to="/ocorrencia">Ocorrencias</NavLink></li>
                     <li><NavLink className="dropdown-item" to="/encomendas">Encomendas</NavLink></li>
                     <li>  <a href="#" className="dropdown-item" onClick={handleLogout}>Logout</a></li>

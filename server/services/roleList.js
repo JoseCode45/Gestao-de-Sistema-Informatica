@@ -1,4 +1,4 @@
-
+//Lista de cargos para cada função do sistema
 export const CargoAdmin = [1, 2, 6, 20];
 export const CargoGestaoStock = [1,7,8, ...CargoAdmin];
 export const CargoProcessamentoPedidos = [2,5, ...CargoAdmin];

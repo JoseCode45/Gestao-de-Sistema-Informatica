@@ -26,6 +26,8 @@ import EncomendaView from './frontoffice/Encomendas/view';
 
 import { CartProvider } from './components/carrinho';
 
+import FaturaView from './frontoffice/Encomendas/fatura';
+
 const AppIn = () => {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -48,6 +50,7 @@ const AppIn = () => {
 
             <Route path="/encomendas" element={<Encomendas />} />
             <Route path="/encomendas/view/:id" element={<EncomendaView />} />
+            <Route path="/encomendas/fatura/:id" element={<FaturaView />} />
 
             <Route path="/carrinho" element={<Carrinho />} />
           </Routes>

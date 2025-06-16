@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import ClienteEncomendaProdutos from '../../components/ClienteEncomendaProdutos';
+import FornecedorEncomendaProdutos from '../../components/fornecedorEncomendaProdutos';
 import { BASE_URL } from '../../components/url';
 
-const ClienteEncomendaEdit = () => {
+const FornecedorEncomendaEdit = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
-        clienteID: '',
-        dataEnvio: '',
+        fornecedorID: '',
+        dataPedido: '',
+        dataEntrega: '',
+        estadoID: ''
     });
 
     const [estados, setEstados] = useState([]);
-    const [clientes, setClientes] = useState([]);
+    const [fornecedores, setFornecedores] = useState([]);
     const [produtosDisponiveis, setProdutosDisponiveis] = useState([]);
     const [produtosAssociados, setProdutosAssociados] = useState([]);
 
@@ -35,25 +37,26 @@ const ClienteEncomendaEdit = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [encomendaRes, estadosRes, clientesRes, produtosRes, produtosAssocRes] = await Promise.all([
-                    axios.get(`${BASE_URL}/cliente-encomenda/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+                const [encomendaRes, estadosRes, fornecedoresRes, produtosRes, produtosAssocRes] = await Promise.all([
+                    axios.get(`${BASE_URL}/fornecedor-encomenda/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
                     axios.get(`${BASE_URL}/estado-encomenda`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${BASE_URL}/cliente/lista`, { headers: { Authorization: `Bearer ${token}` } }), 
-                    axios.get(`${BASE_URL}/produto/lista`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${BASE_URL}/cliente-encomenda/${id}/produtos`, { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get(`${BASE_URL}/fornecedor`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${BASE_URL}/produto/fornecedor/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get(`${BASE_URL}/fornecedor-encomenda/${id}/produtos`, { headers: { Authorization: `Bearer ${token}` } })
                 ]);
 
                 setForm({
-                    clienteID: encomendaRes.data.ClienteID || '',
-                    dataEnvio: toDateTimeLocal(encomendaRes.data.DataEnvio),
+                    fornecedorID: encomendaRes.data.FornecedorID || '',
+                    dataPedido: toDateTimeLocal(encomendaRes.data.DataPedido),
+                    dataEntrega: toDateTimeLocal(encomendaRes.data.DataEntrega),
                     estadoID: encomendaRes.data.EstadoID || '',
                 });
 
                 setEstados(estadosRes.data);
-                setClientes(clientesRes.data);
+                setFornecedores(fornecedoresRes.data);
                 setProdutosDisponiveis(produtosRes.data);
                 setProdutosAssociados(produtosAssocRes.data);
-
+                console.log(encomendaRes.data);
                 setLoading(false);
             } catch (error) {
                 console.error('Erro ao carregar dados da encomenda:', error);
@@ -78,20 +81,21 @@ const ClienteEncomendaEdit = () => {
         try {
 
             // Atualizar dados principais da encomenda
-            await axios.put(`${BASE_URL}/cliente-encomenda/${id}`, {
-                clienteID: form.clienteID,
-                dataEnvio: form.dataEnvio,
+            await axios.put(`${BASE_URL}/transporte/fornecedor/${id}`, {
+                fornecedorID: form.fornecedorID,
+                dataPedido: form.dataPedido,
+                dataEntrega: form.dataEntrega,
                 estadoID: form.estadoID,
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
             //Atualizar produtos associados
-            await axios.put(`${BASE_URL}/cliente-encomenda/${id}/produtos`, produtosAssociados, {
+            await axios.put(`${BASE_URL}/fornecedor-encomenda/${id}/produtos`, produtosAssociados, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            navigate('/admin/clienteencomenda');
+            navigate('/admin/fornecedorencomenda');
         } catch (error) {
             console.error('Erro ao atualizar encomenda:', error);
             alert('Erro ao salvar alterações.');
@@ -99,14 +103,14 @@ const ClienteEncomendaEdit = () => {
         }
     };
 
-        const confirmarEncomenda = async () => {
+    const confirmarEncomenda = async () => {
         try {
-            await axios.patch(`${BASE_URL}/transporte/cliente/${id}`,
+            await axios.patch(`${BASE_URL}/transporte/fornecedor/${id}`,
                 { alteradorID },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert('Encomenda confirmada com sucesso!');
-            navigate('/admin/clienteencomenda');
+            navigate('/admin/fornecedorencomenda');
         } catch (error) {
             console.error('Erro ao confirmar encomenda:', error);
             alert('Erro ao confirmar encomenda.');
@@ -116,51 +120,63 @@ const ClienteEncomendaEdit = () => {
     // Função para cancelar encomenda fornecedor
     const cancelarEncomenda = async () => {
         try {
-            await axios.patch(`${BASE_URL}/transporte/cliente/cancelar/${id}`,
+            await axios.patch(`${BASE_URL}/transporte/fornecedor/cancelar/${id}`,
                 { alteradorID },
                 { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
             );
             alert('Encomenda cancelada com sucesso!');
-            navigate('/admin/clienteencomenda');
+            navigate('/admin/fornecedorencomenda');
         } catch (error) {
             console.error('Erro ao cancelar encomenda:', error);
             alert('Erro ao cancelar encomenda.');
         }
     };
 
+
     if (loading) return <p>A carregar encomenda...</p>;
 
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
-                <h1>Editar Encomenda do Cliente</h1>
-                <Link to="/admin/clienteencomenda" className="btn btn-outline-secondary">Voltar</Link>
+                <h1>Editar Encomenda do Fornecedor</h1>
+                <Link to="/admin/fornecedorencomenda" className="btn btn-outline-secondary">Voltar</Link>
             </div>
 
             <hr />
 
             <form onSubmit={handleSubmit}>
                 <div className="mb-3">
-                    <label>Cliente</label>
-                    <select className="form-select" name="clienteID" value={form.clienteID} onChange={handleChange} required>
-                        <option value="">Selecione o cliente</option>
-                        {clientes.map(c => (
+                    <label>Fornecedor</label>
+                    <select className="form-select" name="fornecedorID" value={form.fornecedorID} onChange={handleChange} required>
+                        <option value="">Selecione o Fornecedor</option>
+                        {fornecedores.map(c => (
                             <option key={c.ID} value={c.ID}>{c.Nome}</option>
                         ))}
                     </select>
                 </div>
 
                 <div className="mb-3">
-                    <label>Data da Encomenda</label>
+                    <label>Data do Pedido</label>
                     <input
                         type="datetime-local"
                         className="form-control"
-                        name="dataEnvio"  // nome compatível com backend
-                        value={form.dataEnvio}
+                        name="dataPedido"
+                        value={form.dataPedido}
                         onChange={handleChange}
                         required
                     />
+                </div>
 
+                <div className="mb-3">
+                    <label>Data da Entrega</label>
+                    <input
+                        type="datetime-local"
+                        className="form-control"
+                        name="dataEntrega"
+                        value={form.dataEntrega}
+                        onChange={handleChange}
+
+                    />
                 </div>
 
                 <div className="mb-3">
@@ -173,7 +189,7 @@ const ClienteEncomendaEdit = () => {
                     </select>
                 </div>
 
-                <ClienteEncomendaProdutos
+                <FornecedorEncomendaProdutos
                     associados={produtosAssociados}
                     setAssociados={setProdutosAssociados}
                     produtosDisponiveis={produtosDisponiveis}
@@ -185,7 +201,7 @@ const ClienteEncomendaEdit = () => {
                     {saving ? 'A salvar...' : 'Salvar Alterações'}
                 </button>
             </form>
-                        <br></br>
+            <br></br>
             <div className="d-flex gap-2">
                 <button type="button" className="btn btn-success" onClick={confirmarEncomenda} disabled={form.estadoID!=1 && form.estadoID!=2 }>
                     Confirmar Encomenda
@@ -198,4 +214,4 @@ const ClienteEncomendaEdit = () => {
     );
 };
 
-export default ClienteEncomendaEdit;
+export default FornecedorEncomendaEdit;

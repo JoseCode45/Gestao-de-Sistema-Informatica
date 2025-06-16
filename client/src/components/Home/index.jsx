@@ -40,9 +40,9 @@ const Home = () => {
 
   const desconto = (descontoTipo, DescontoValor, Preco) => {
     if (descontoTipo === 'percentual') {
-      return Preco - (Preco * DescontoValor / 100)
+      return (Preco - (Preco * DescontoValor / 100)).toFixed(2)
     } else {
-      return Preco - DescontoValor
+      return (Preco - DescontoValor).toFixed(2)
     }
 
   };
@@ -69,13 +69,12 @@ const Home = () => {
             <span className="preco-original">{produto.Preco}€</span>
           )}
           <br></br>
-          <span className="preco-promocional">{desconto(produto.Descontotipo, produto.DescontoValor, produto.Preco)}€</span>
+          <span className="preco-promocional">{(produto.EstadoID === 3)? desconto(produto.Descontotipo, produto.DescontoValor, produto.Preco) : produto.Preco}€</span>
         </div>
-            <button className="btn-comprar" onClick={() => addToCart({
-      ProdutoID: produto.ID,
-      Nome: produto.Nome,
-      Preco: produto.Preco
-    })}>
+            <button className="btn-comprar" onClick={() => { addToCart({ProdutoID: produto.ID, Nome: produto.Nome, Preco: produto.Preco
+    });
+    alert(`Produto adicionado: ${produto.Nome}`);
+  }}>
       Adicionar ao Carrinho
     </button>
         

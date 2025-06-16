@@ -16,7 +16,7 @@ const Transporte = () => {
   const token = localStorage.getItem('token');
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const alteradorID = decodedToken.id;
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
 
   useEffect(() => {
     axios.get(`${BASE_URL}/transporte`, {
@@ -109,7 +109,7 @@ const Transporte = () => {
                 <td>{transporte.DataEntrega ? new Date(transporte.DataEntrega).toLocaleString() : "--"}</td>
                 <td>{transporte.CustoTotal}</td>
                 <td>{transporte.ClienteEncomendaID} {transporte.FornecedorEncomendaID} <strong>{transporte.FornecedorEncomendaID? 'Fornecedor' : 'Cliente'}</strong></td>
-                <td>{transporte.TransportadoraID}</td>
+                <td>{transporte.Transportadora}</td>
                 <td>{transporte.CriadorID} {transporte.CriadorNome || "N/A"}</td>
                 <td>{transporte.AlteradorID} {transporte.AlteradorNome || "N/A"}</td>
                 <td>{new Date(transporte.DataCriacao).toLocaleString()}</td>

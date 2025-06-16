@@ -1,3 +1,7 @@
 .teste{
  color: blue; 
 }
+
+.fornecedor-encomenda-table {
+  transform: translateX(0px);
+}

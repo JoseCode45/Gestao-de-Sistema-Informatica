@@ -105,8 +105,8 @@ const Fornecedor = () => {
             <tr>
               <th>ID</th>
               <th>Nome</th>
-              <th>Morada</th>
               <th>NIF</th>
+              <th>Morada</th>
               <th>Responsável</th>
               <th style={{width: '100px' }}>Produtos</th>
               <th>Criado por</th>

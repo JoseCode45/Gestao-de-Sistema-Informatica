@@ -138,7 +138,7 @@ router.get('/employees', async (req, res) => {
 });
 
 // GET /utilizador/admin - só administradores podem acessar
-router.get('/admin', authenticateToken, authorizeRole('Gestor de compras', 'admin'), (req, res) => {
+router.get('/admin', authenticateToken, authorizeRole(1), (req, res) => {
   res.json({ message: 'Bem-vindo, administrador!' });
 });
 

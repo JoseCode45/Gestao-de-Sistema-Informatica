@@ -115,6 +115,27 @@ const PromocaoEdit = () => {
     }
   };
 
+  const cancelar = async () => {
+  const confirmCancel = window.confirm("Tem certeza que deseja cancelar esta promoção?");
+  if (!confirmCancel) return;
+
+  setSaving(true);
+
+  try {
+    await axios.patch(`${BASE_URL}/promocao/${id}`, {
+      
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    navigate('/admin/promocoes');
+  } catch (error) {
+    console.error('Erro ao cancelar promoção:', error);
+    alert('Erro ao cancelar promoção.');
+    setSaving(false);
+  }
+};
+
   if (loading) return <p>A carregar dados da promoção...</p>;
 
   return (
@@ -152,19 +173,6 @@ const PromocaoEdit = () => {
         </div>
 
         <div className="mb-3">
-          <label>Desconto (valor ou percentagem)</label>
-          <input
-            type="number"
-            className="form-control"
-            name="descontoValor"
-            value={form.descontoValor}
-            onChange={handleChange}
-            step="any"
-            required
-          />
-        </div>
-
-        <div className="mb-3">
           <label>Tipo de Desconto</label>
           <select
             className="form-select"
@@ -180,6 +188,19 @@ const PromocaoEdit = () => {
         </div>
 
         <div className="mb-3">
+          <label>Desconto (valor ou percentagem)</label>
+          <input
+            type="number"
+            className="form-control"
+            name="descontoValor"
+            value={form.descontoValor}
+            onChange={handleChange}
+            step="any"
+            required
+          />
+        </div>
+
+        <div className="mb-3">
           <label>Motivo</label>
           <textarea
             className="form-control"
@@ -190,22 +211,6 @@ const PromocaoEdit = () => {
             maxLength={255}
             required
           />
-        </div>
-
-        <div className="mb-3">
-          <label>Estado</label>
-          <select
-            className="form-select"
-            name="estadoID"
-            value={form.estadoID}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Selecione o estado</option>
-            {estados.map(e => (
-              <option key={e.ID} value={e.ID}>{e.Nome}</option>
-            ))}
-          </select>
         </div>
 
         <FornecedorProduto
@@ -219,6 +224,15 @@ const PromocaoEdit = () => {
         <button type="submit" className="btn btn-primary" disabled={saving}>
           {saving ? 'A salvar...' : 'Salvar Alterações'}
         </button>
+
+        <button
+          type="button"
+          className="btn btn-danger ms-2"
+          onClick={cancelar}
+          disabled={saving}
+        >Cancelar</button>
+
+
       </form>
     </div>
   );

@@ -58,6 +58,7 @@ const Ocorrencia = () => {
     }
   };
 
+    //Retornar cor dependendo do ID do estado.
   const getEstadoColorClass = (estadoId) => {
     switch (estadoId) {
       case 1:
@@ -129,10 +130,10 @@ const Ocorrencia = () => {
               <th>Registou</th>
               <th>Resolveu</th>
               <th>Solucao</th>
-              <th>Estado</th>
               <th>Criado em</th>
               <th>Atualizado em</th>
               <th>Ações</th>
+              <th>Estado</th>
             </tr>
           </thead>
           <tbody>
@@ -146,6 +147,8 @@ const Ocorrencia = () => {
                 <td>{oc.RegistouID} {oc.NomeRegistou || "N/A"}</td>
                 <td>{oc.ResolveuID ? `${oc.ResolveuID} ${oc.NomeResolveu || "N/A"}` : '---'}</td>
                 <td>{oc.Solucao}</td>
+                <td>{new Date(oc.DataCriacao).toLocaleString()}</td>
+                <td>{new Date(oc.DataAlteracao).toLocaleString()}</td>
                 <td className="text-center align-middle">
                   <button
                     className={`btn btn-sm ${getEstadoColorClass(oc.EstadoID)}`}
@@ -154,8 +157,6 @@ const Ocorrencia = () => {
                     {oc.EstadoOcorrencia}
                   </button>
                 </td>
-                <td>{new Date(oc.DataCriacao).toLocaleString()}</td>
-                <td>{new Date(oc.DataAlteracao).toLocaleString()}</td>
                 <td className="text-center align-middle">
                   <button
                     className='btn btn-outline-dark rounded-0'

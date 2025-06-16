@@ -84,6 +84,7 @@ const Encomenda = () => {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Morada de Envio</th>
               <th>Data de Envio</th>
               <th>Data de Entrega</th>
               <th>Total dos Produtos</th>
@@ -94,37 +95,50 @@ const Encomenda = () => {
               <th>Ações</th>
             </tr>
           </thead>
-          <tbody>
-            {currentData.map((encomenda) => (
-              <tr key={encomenda.ID}>
-                <td>{encomenda.ID}</td>
-                <td>{encomenda.DataEnvio || "--"} </td>
-                <td>{encomenda.DataEntrega || "--"}</td>
-                <td>{encomenda.TotalProduto}</td>
-                <td>{encomenda.TotalTransporte}</td>
-                <td>{encomenda.TotalImpostos}</td>
-                <td>{encomenda.TotalEncomenda}</td>
-                <td className="text-center align-middle">
-                  <button
-                    className={`btn btn-sm ${getEstadoColorClass(encomenda.EstadoID)}`}
-                    style={{ width: '90px' }}
-                  >
-                    {encomenda.EstadoEncomenda}
-                  </button>
-                </td>
-                <td className="text-center align-middle">
-                  <button
-                    className='btn btn-outline-dark rounded-0'
-                    onClick={async () => {
-                      navigate(`/encomendas/view/${encomenda.ID}`);
-                    }}
-                  >
-                    Visualizar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
+<tbody>
+  {currentData.map((encomenda) => {
+    console.log(encomenda); // <-- Aqui você vê cada encomenda no console
+    return (
+      <tr key={encomenda.ID}>
+        <td>{encomenda.ID}</td>
+        <td>{encomenda.Morada}</td>
+        <td>{encomenda.DataEnvio ? new Date(encomenda.DataEnvio).toLocaleString() : "--"}</td>
+        <td>{encomenda.DataEntrega ? new Date(encomenda.DataEntrega).toLocaleString() : "--"}</td>
+        <td>{encomenda.TotalProduto} €</td>
+        <td>{encomenda.TotalTransporte} €</td>
+        <td>{encomenda.TotalImpostos} €</td>
+        <td>{(Number(encomenda.TotalProduto) + Number(encomenda.TotalTransporte) + Number(encomenda.TotalImpostos)).toFixed(2)} €</td>
+        <td className="text-center align-middle">
+          <button
+            className={`btn btn-sm ${getEstadoColorClass(encomenda.EstadoID)}`}
+            style={{ width: '90px' }}
+          >
+            {encomenda.EstadoEncomenda}
+          </button>
+        </td>
+        <td className="text-center align-middle">
+          <button
+            className='btn btn-outline-dark rounded-0'
+            onClick={async () => {
+              navigate(`/encomendas/view/${encomenda.ID}`);
+            }}
+          >
+            Visualizar
+          </button>
+                    <button
+            className='btn btn-outline-dark rounded-0'
+            onClick={async () => {
+              navigate(`/encomendas/fatura/${encomenda.ID}`);
+            }}
+          >
+            Fatura
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
         </table>
       </div>
       <hr />

@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
 });
 
 // Obter lista de clientes detalhada
-router.get('/lista', async (req, res) => {
+router.get('/lista', authorizeRole(), async (req, res) => {
   try {
     const clientes = await Cliente.listarClientesAtivos();
     res.json(clientes);

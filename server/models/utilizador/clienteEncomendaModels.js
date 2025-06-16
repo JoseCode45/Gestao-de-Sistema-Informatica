@@ -6,7 +6,7 @@ async getAll() {
   const [rows] = await pool.query(`
    SELECT 
       ce.ID, ce.ClienteID, c.Nome AS ClienteNome, ce.DataEnvio, ce.DataEntrega,
-      ce.TotalEncomenda, ce.TotalProduto, ce.TotalTransporte, ce.TotalImpostos, ce.EstadoID,
+      ce.TotalEncomenda, ce.TotalProduto, ce.TotalTransporte, ce.TotalImpostos, ce.EstadoID, ce.Morada,
       ee.Nome AS EstadoNome, ce.CriadorID, u1.Nome AS CriadorNome, ce.AlteradorID, u2.Nome AS AlteradorNome, ce.DataCriacao,
       ce.DataAlteracao
     FROM ClienteEncomenda ce
@@ -20,7 +20,7 @@ async getAll() {
   return rows;
 },
 
-//Criar encomendaInicial
+//Criar encomenda Inicial
   async createBegin(clienteID) {
     const [result] = await pool.query(
       `INSERT INTO ClienteEncomenda 
@@ -35,7 +35,7 @@ async getAll() {
 async getEncomendasCliente(user){
   const [result] = await pool.query(
     `SELECT 
-    ce.ID, u.Nome, u.Morada, ce.DataEnvio, ce.DataEntrega, ce.TotalEncomenda,
+    ce.ID, u.Nome, u.Morada, ce.DataEnvio, ce.DataEntrega, ce.TotalEncomenda, ce.Morada,
     ce.TotalProduto, ce.TotalTransporte, ce.TotalImpostos, ce.EstadoID, ee.Nome AS EstadoEncomenda FROM ClienteEncomenda ce
     LEFT JOIN Cliente c ON c.ID = ce.ClienteID
     LEFT JOIN Utilizador u ON u.ID = c.UtilizadorID
@@ -209,7 +209,7 @@ async updateTotals(encomendaID) {
   const totais = rows[0];
 
   const totalTransporte = 5.00;  // Exemplo fixo
-  const totalImpostos = (totais.TotalEncomenda || 0) * 0.23; // Exemplo 23% impostos
+  const totalImpostos = (totais.TotalEncomenda || 0) * 0.23; // Exemplo 13% impostos
 
   await pool.query(
     `UPDATE ClienteEncomenda

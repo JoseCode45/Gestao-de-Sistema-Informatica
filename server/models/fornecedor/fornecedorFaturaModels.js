@@ -3,19 +3,36 @@ import pool from '../../database.js';
 
 export const FornecedorFatura = {
   async getAll() {
-    const [rows] = await pool.query('SELECT * FROM FornecedorFatura WHERE Estado = "ativo"');
+    const [rows] = await pool.query(`SELECT 
+      cf.ID, cf.DataEmissao, cf.DataValidade, cf.DataPagamento, 
+      cf.EncomendaID, cf.TotalFaturado, cf.TotalIVA, cf.EstadoID, ef.Nome AS EstadoFatura, 
+      cf.CriadorID, criador.Nome AS criadorNome, cf.AlteradorID, alterador.Nome AS alteradorNome, 
+      cf.DataCriacao, cf.DataAlteracao from fornecedorfatura cf
+      LEFT JOIN utilizador criador ON criador.ID = cf.CriadorID
+      LEFT JOIN utilizador alterador ON alterador.ID = cf.AlteradorID
+      LEFT JOIN EstadoFatura ef ON ef.ID = cf.EstadoID`);
     return rows;
   },
 
   async getById(id) {
-    const [rows] = await pool.query('SELECT * FROM FornecedorFatura WHERE ID = ?', [id]);
+    const [rows] = await pool.query(`SELECT 
+      cf.ID, cf.DataEmissao, cf.DataValidade, cf.DataPagamento, 
+      cf.EncomendaID, cf.TotalFaturado, cf.TotalIVA, cf.EstadoID, ef.Nome AS EstadoFatura, 
+      cf.CriadorID, criador.Nome AS criadorNome, cf.AlteradorID, alterador.Nome AS alteradorNome, 
+      cf.DataCriacao, cf.DataAlteracao from fornecedorfatura cf
+      LEFT JOIN utilizador criador ON criador.ID = cf.CriadorID
+      LEFT JOIN utilizador alterador ON alterador.ID = cf.AlteradorID
+      LEFT JOIN EstadoFatura ef ON ef.ID = cf.EstadoID
+      WHERE cf.ID = ?`, [id]);
     return rows[0];
   },
 
-  async create(dataEmissao, dataValidade, dataPagamento, encomendaID, totalFaturado, totalIVA, estadoID, criadorID) {
+  async create(dataVal, encomendaID, totalFaturado, totalIVA, criadorID) {
     const [result] = await pool.query(
-      'INSERT INTO FornecedorFatura (DataEmissao, DataValidade, DataPagamento, EncomendaID, TotalFaturado, TotalIVA, EstadoID, CriadorID, AlteradorID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [dataEmissao, dataValidade, dataPagamento, encomendaID, totalFaturado, totalIVA, estadoID, criadorID, criadorID]
+  `INSERT INTO fornecedorfatura 
+    (DataEmissao, DataValidade, EncomendaID, TotalFaturado, TotalIVA, EstadoID, CriadorID, AlteradorID) 
+   VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)`,
+  [dataVal, encomendaID, totalFaturado, totalIVA, 1 , criadorID, criadorID]
     );
     return result.insertId;
   },
@@ -37,6 +54,13 @@ export const FornecedorFatura = {
     async ativar(id, alteradorID) {
     await pool.query(
       'UPDATE FornecedorFatura SET Estado = "ativo", AlteradorID = ? WHERE ID = ?',
+      [alteradorID, id]
+    );
+  },
+
+    async pagar(id, alteradorID) {
+    await pool.query(
+      'UPDATE FornecedorFatura SET DataPagamento = NOW(), EstadoID = 3, AlteradorID = ? WHERE ID = ?',
       [alteradorID, id]
     );
   },

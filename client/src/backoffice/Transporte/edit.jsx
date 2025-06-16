@@ -25,8 +25,6 @@ const TransporteEdit = () => {
     const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem('token');
-    const decodedToken = JSON.parse(atob(token.split('.')[1]));
-    const alteradorID = decodedToken.id;
 
       // Helper: format ISO string to "yyyy-MM-ddTHH:mm" local datetime string for input[type=datetime-local]
   const toDateTimeLocal = (isoString) => {
@@ -108,6 +106,20 @@ const TransporteEdit = () => {
         }
     };
 
+    const proximafase = async () => {
+    try {
+        await axios.patch(`${BASE_URL}/transporte/fornecedor/step/${id}`, {
+        }, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        alert('Transporte atualizado para a próxima fase com sucesso!');
+        navigate('/admin/transporte');
+    } catch (err) {
+        console.error("Erro ao avançar fase:", err);
+        alert("Erro ao avançar para a próxima fase.");
+    }
+};
+
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center mb-3">
@@ -127,6 +139,7 @@ const TransporteEdit = () => {
                             name="dataSaida"
                             value={form.dataSaida}
                             onChange={handleChange}
+                            disabled={form.estadoID==4}
                             required
                         />
                     </div>
@@ -138,6 +151,7 @@ const TransporteEdit = () => {
                             name="dataEntrega"
                             value={form.dataEntrega}
                             onChange={handleChange}
+                            disabled={form.estadoID==4 }
                         />
                     </div>
                     <div className="mb-3">
@@ -151,6 +165,7 @@ const TransporteEdit = () => {
                             value={form.custoTotal}
                             onChange={handleChange}
                             required
+                            disabled={form.estadoID==4 }
                         />
                     </div>
                     <div className="mb-3">
@@ -160,7 +175,7 @@ const TransporteEdit = () => {
                             name="clienteEncomendaID"
                             value={form.clienteEncomendaID}
                             onChange={handleChange}
-                            disabled={!!form.fornecedorEncomendaID}
+                            disabled={!!form.fornecedorEncomendaID || form.estadoID == 4}
                         >
                             <option value="">Selecione uma Encomenda de Cliente</option>
                             {clientes.map(cliente => (
@@ -177,7 +192,7 @@ const TransporteEdit = () => {
                             name="fornecedorEncomendaID"
                             value={form.fornecedorEncomendaID}
                             onChange={handleChange}
-                            disabled={!!form.clienteEncomendaID}
+                            disabled={!!form.clienteEncomendaID || form.estadoID == 4}
                         >
                             <option value="">Selecione uma Encomenda de Fornecedor</option>
                             {fornecedores.map(fornecedor => (
@@ -195,6 +210,7 @@ const TransporteEdit = () => {
                             value={form.transportadoraID}
                             onChange={handleChange}
                             required
+                            disabled={form.estadoID==4 }
                         >
                             <option value="">Selecione uma Transportadora</option>
                             {transportadoras.map(transp => (
@@ -212,6 +228,7 @@ const TransporteEdit = () => {
                             value={form.estadoID}
                             onChange={handleChange}
                             required
+                            disabled={form.estadoID==4 }
                         >
                             <option value="">Selecione um Estado</option>
                             {estados.map(estado => (
@@ -223,6 +240,15 @@ const TransporteEdit = () => {
                     </div>
                     <hr />
                     <button type="submit" className="btn btn-primary">Salvar Alterações</button>
+                    {(form.estadoID !== 4 ) && (
+    <button 
+        type="button" 
+        className="btn btn-warning ms-2" 
+        onClick={proximafase}
+    >
+        Ir para próxima fase
+    </button>
+)}
                 </form>
             )}
         </div>

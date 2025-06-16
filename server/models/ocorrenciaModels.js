@@ -10,7 +10,7 @@ export const Ocorrencia = {
     Ocorrencia.RegistouID, u1.Nome AS NomeRegistou,
     Ocorrencia.ResolveuID, u2.Nome AS NomeResolveu,
     Ocorrencia.EstadoID, EstadoOcorrencia.Nome AS EstadoOcorrencia,
-    Ocorrencia.CriadorID, u3.Nome AS NomeCriador,
+    Ocorrencia.CriadorID, u3.Nome A S NomeCriador,
     Ocorrencia.AlteradorID, u4.Nome AS NomeAlterador,
     Ocorrencia.DataCriacao, Ocorrencia.DataAlteracao, Ocorrencia.Solucao
     FROM Ocorrencia

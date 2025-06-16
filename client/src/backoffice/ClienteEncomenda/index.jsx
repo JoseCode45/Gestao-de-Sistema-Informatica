@@ -17,6 +17,24 @@ const ClienteEncomenda = () => {
   const decodedToken = JSON.parse(atob(token.split('.')[1]));
   const itemsPerPage = 10;
 
+  //Retornar cor dependendo do ID do estado.
+  const getEstadoColorClass = (estadoId) => {
+    switch (estadoId) {
+      case 1:
+        return 'btn-warning';      // Pendente
+      case 2:
+        return 'btn-primary';      // Em Análise
+      case 3:
+        return 'btn-info';         // Em reposição
+      case 4:
+        return 'btn-secondary';    // Crédito Emitido
+      case 5:
+        return 'btn-success';      // Resolvido
+      default:
+        return 'btn-dark';         // Cancelado
+    }
+  };
+
   useEffect(() => {
     axios.get(`${BASE_URL}/cliente-encomenda`, {
       headers: {
@@ -78,11 +96,11 @@ const ClienteEncomenda = () => {
               <th>Total Produto</th>
               <th>Total Transporte</th>
               <th>Total Impostos</th>
-              <th>Estado</th>
               <th>Criado por</th>
               <th>Alterado por</th>
               <th>Data Criação</th>
               <th>Última Alteração</th>
+              <th>Estado</th>
               <th><Link to={`/admin/clienteencomenda/criar`} className='btn btn-outline-dark w-40 rounded-0'>NOVO</Link></th>
             </tr>
           </thead>
@@ -97,11 +115,17 @@ const ClienteEncomenda = () => {
                 <td>{item.TotalProduto} €</td>
                 <td>{item.TotalTransporte} €</td>
                 <td>{item.TotalImpostos} €</td>
-                <td>{item.EstadoNome || 'N/A'}</td>
                 <td>{item.CriadorNome || 'N/A'}</td>
                 <td>{item.AlteradorNome || 'N/A'}</td>
                 <td>{new Date(item.DataCriacao).toLocaleString()}</td>
                 <td>{new Date(item.DataAlteracao).toLocaleString()}</td>
+                <td>
+                                  <button
+                    className={`btn btn-sm ${getEstadoColorClass(item.EstadoID)}`}
+                    style={{ width: '90px' }}
+                  >
+                    {item.EstadoNome}
+                  </button></td>
                 <td className="text-center align-middle">
                   <Link to={`/admin/clienteencomenda/edit/${item.ID}`} className='btn btn-outline-dark w-40 rounded-0'>EDIT</Link>
                 </td>

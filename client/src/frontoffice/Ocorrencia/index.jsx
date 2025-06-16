@@ -90,7 +90,6 @@ const Ocorrencia = () => {
               <th>Data Resolução</th>
               <th>Motivo</th>
               <th>Descrição</th>
-              <th>Registou</th>
               <th>Resolveu</th>
               <th>Solucao</th>
               <th>Estado</th>
@@ -105,8 +104,7 @@ const Ocorrencia = () => {
                 <td>{oc.DataResolucao ? new Date(oc.DataResolucao).toLocaleString() : '---'}</td>
                 <td>{oc.Motivo}</td>
                 <td>{oc.Descricao}</td>
-                <td>{oc.RegistouID} {oc.NomeRegistou || "N/A"}</td>
-                <td>{oc.ResolveuID ? `${oc.ResolveuID} ${oc.NomeResolveu || "N/A"}` : '---'}</td>
+                <td>{oc.ResolveuID ? `${oc.NomeResolveu || "N/A"}` : '---'}</td>
                 <td>{oc.Solucao}</td>
                 <td className="text-center align-middle">
                   <button

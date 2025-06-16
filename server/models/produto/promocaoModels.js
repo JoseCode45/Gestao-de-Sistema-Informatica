@@ -132,8 +132,14 @@ async listar(promocaoID) {
   `, [promocaoID]);
 
   return rows;
-}
+},
 
+async cancelar(promocaoID, alteradorID) {
+  const [rows] = await pool.query(`
+    UPDATE Promocao SET AlteradorID = ?, EstadoID = 4, DataValidade = NOW() WHERE ID = ?
+`, [alteradorID, promocaoID]);
+  return rows;
+}
 
 
 };

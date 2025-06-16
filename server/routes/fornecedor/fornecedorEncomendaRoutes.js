@@ -3,8 +3,29 @@ const router = Router();
 import { FornecedorEncomenda } from '../../models/fornecedor/FornecedorEncomendaModels.js';
 import authenticateToken from '../../services/authenticateToken.js';
 import authorizeRole from '../../services/authorizeRole.js';
+import pool from '../../database.js';
 
 router.use(authenticateToken);
+
+const IVA = 0.13;
+
+router.get('/user', async (req, res) => {
+  const user = req.user.id;
+  const Encomendas = await FornecedorEncomenda.getEncomendasFornecedor(user);
+  res.json(Encomendas);
+});
+
+
+// Obter produtos de uma encomenda
+router.get('/:id/produtos', async (req, res) => {
+  try {
+    const produtos = await FornecedorEncomenda.getProdutos(req.params.id);
+    res.json(produtos);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao buscar produtos da encomenda Fornecedor' });
+  }
+});
 
 // Obter todas as FornecedorEncomenda
 router.get('/', async (req, res) => {
@@ -21,31 +42,100 @@ router.get('/:id', async (req, res) => {
 
 // Adicionar FornecedorEncomenda
 router.post('/', async (req, res) => {
-  criadorID = req.user.id;
-  const { nome } = req.body;
-  const id = await FornecedorEncomenda.create(nome, criadorID);
-  res.status(201).json({ id });
+  try {
+    const { fornecedorID, dataPedido, dataEntrega, estadoID } = req.body;
+    const criadorID = req.user.id;
+
+    const newEncomendaID = await FornecedorEncomenda.create(
+      fornecedorID,
+      dataPedido,
+      dataEntrega,
+      estadoID,
+      criadorID
+    );
+
+    res.status(201).json({ id: newEncomendaID });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao criar a encomenda.' });
+  }
 });
+
+
 
 // Atualizar FornecedorEncomenda
 router.put('/:id', async (req, res) => {
-  alteradorID = req.user.id; 
-  const {nome} = req.body;
-  await FornecedorEncomenda.update(req.params.id, nome, alteradorID);
-  res.json({ message: 'FornecedorEncomenda atualizada' });
+  const alteradorID = req.user.id;
+  const { fornecedorID, dataPedido, estadoID, dataEntrega, totalEncomenda, totalIVA } = req.body;
+  await FornecedorEncomenda.update(req.params.id, fornecedorID, dataPedido, estadoID, dataEntrega, totalEncomenda, totalIVA, alteradorID);
+  res.json({ message: 'ENcomenda Fornecedor atualizada' });
 });
 
-// Desativar FornecedorEncomenda
-router.delete('/:id', async (req, res) => {
-  const { alteradorID } = req.body;
-  await FornecedorEncomenda.remove(req.params.id, alteradorID);
-  res.json({ message: 'FornecedorEncomenda desativada' });
+
+//Atualizar produtos de encomenda
+router.put('/:id/produtos', async (req, res) => {
+  try {
+    const encomendaID = Number(req.params.id);
+
+    if (isNaN(encomendaID)) {
+      return res.status(400).json({ erro: 'EncomendaID inválido.' });
+    }
+    const alteradorID = req.user.id;
+    const produtos = req.body;
+
+    if (!Array.isArray(produtos)) {
+      return res.status(400).json({ erro: '"produtos" deve ser um array.' });
+    }
+
+
+    for (const prod of produtos) {
+      const { ProdutoID, Quantidade } = prod;
+
+      if (!ProdutoID || !Quantidade || Quantidade <= 0) {
+        return res.status(400).json({ erro: 'ProdutoID e Quantidade são obrigatórios e válidos.' });
+      }
+
+      // Buscar dados do produto no banco
+      const [rows] = await pool.query('SELECT Preco FROM Produto WHERE ID = ?', [ProdutoID]);
+      if (rows.length === 0) {
+        return res.status(400).json({ erro: `Produto com ID ${ProdutoID} não encontrado.` });
+      }
+      const produtoDB = rows[0];
+
+      const ValorUnitario = produtoDB.Preco;
+      const ValorIVA = (ValorUnitario * Quantidade) * (IVA);
+      const Total = (ValorUnitario * Quantidade) + ValorIVA;
+
+      // Inserir produto na encomenda com valores calculados
+      await FornecedorEncomenda.adicionarProduto(
+        encomendaID,
+        ProdutoID,
+        Quantidade,
+        ValorUnitario,
+        ValorIVA,
+        Total
+      );
+    }
+
+    const [soma] = await pool.query(`
+  SELECT 
+    SUM(ValorUnitario * Quantidade) AS totalEncomenda,
+    SUM(ValorIVA) AS totalIVA
+  FROM FornecedorEncomendaProdutos
+  WHERE EncomendaID = ?
+`, [encomendaID]);
+
+    await pool.query(`
+  UPDATE FornecedorEncomenda 
+  SET TotalEncomenda = ?, totalIVA = ?
+  WHERE ID = ?
+`, [soma[0].totalEncomenda, soma[0].totalIVA, encomendaID]);
+
+    res.json({ message: 'Produtos da encomenda atualizados com sucesso.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ erro: 'Erro ao atualizar produtos da encomenda.' });
+  }
 });
 
-// Ativar FornecedorEncomenda
-router.patch('/:id', async (req, res) => {
-  const { alteradorID } = req.body;
-  await FornecedorEncomenda.ativar(req.params.id, alteradorID);
-  res.json({ message: 'FornecedorEncomenda ativada' });
-});
 export default router;

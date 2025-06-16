@@ -21,9 +21,9 @@ class Footer extends Component {
             <div className="mb-3">
               <nav className="nav mb-2">
                 <Link to="/termos" className="nav-link px-2 text-muted">Termos de Uso</Link>
-                <Link to="/contactos" className="nav-link px-2 text-muted">Contactos</Link>
-                <Link to="/sobre" className="nav-link px-2 text-muted">Sobre</Link>
-                <Link to="/criar-ocorrencia" className="nav-link px-2 text-muted">Criar Ocorrência</Link>
+                <Link to="/contact" className="nav-link px-2 text-muted">Contactos</Link>
+                <Link to="/about" className="nav-link px-2 text-muted">Sobre</Link>
+                <Link to="/ocorrencia" className="nav-link px-2 text-muted">Criar Ocorrência</Link>
               </nav>
               <small className="text-muted">
                 &copy; ViniSI 2025 &nbsp;&bull;&nbsp; Conteúdo exclusivo do ViniSI • Todos os direitos reservados

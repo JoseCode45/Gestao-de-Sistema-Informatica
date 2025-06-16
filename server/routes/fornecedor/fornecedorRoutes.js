@@ -7,7 +7,7 @@ import validarNIF from '../../services/validarNIF.js'
 
 router.use(authenticateToken);
 
-// Obter todas as Fornecedor
+// Obter todos os Fornecedor
 router.get('/', async (req, res) => {
   const result = await Fornecedor.getAll();
   res.json(result);

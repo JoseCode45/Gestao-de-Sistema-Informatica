@@ -3,12 +3,41 @@ import pool from '../../database.js';
 
 export const ClienteFatura = {
   async getAll() {
-    const [rows] = await pool.query('SELECT * FROM ClienteFatura WHERE Estado = "ativo"');
+    const [rows] = await pool.query(`SELECT 
+      cf.ID, cf.DataEmissao, cf.DataValidade, cf.DataPagamento, 
+      cf.EncomendaID, cf.TotalFaturado, cf.TotalIVA, cf.EstadoID, ef.Nome AS EstadoFatura, 
+      cf.CriadorID, criador.Nome AS CriadorNome, cf.AlteradorID, alterador.Nome AS AlteradorNome, 
+      cf.DataCriacao, cf.DataAlteracao from clientefatura cf
+      LEFT JOIN utilizador criador ON criador.ID = cf.CriadorID
+      LEFT JOIN utilizador alterador ON alterador.ID = cf.AlteradorID
+      LEFT JOIN EstadoFatura ef ON ef.ID = cf.EstadoID`);
     return rows;
   },
 
   async getById(id) {
-    const [rows] = await pool.query('SELECT * FROM ClienteFatura WHERE ID = ?', [id]);
+    const [rows] = await pool.query(`SELECT 
+      cf.ID, cf.DataEmissao, cf.DataValidade, cf.DataPagamento, 
+      cf.EncomendaID, cf.TotalFaturado, cf.TotalIVA, cf.EstadoID, ef.Nome AS EstadoFatura, 
+      cf.CriadorID, criador.Nome AS criadorNome, cf.AlteradorID, alterador.Nome AS alteradorNome, 
+      cf.DataCriacao, cf.DataAlteracao from clientefatura cf
+      LEFT JOIN utilizador criador ON criador.ID = cf.CriadorID
+      LEFT JOIN utilizador alterador ON alterador.ID = cf.AlteradorID
+      LEFT JOIN EstadoFatura ef ON ef.ID = cf.EstadoID
+      WHERE cf.ID = ?`, [id]);
+    return rows[0];
+  },
+
+    async getByEncomenda(id) {
+    const [rows] = await pool.query(`SELECT 
+      cf.ID, cf.DataEmissao, cf.DataValidade, cf.DataPagamento, 
+      cf.EncomendaID, cf.TotalFaturado, cf.TotalIVA, cf.EstadoID, ef.Nome AS EstadoFatura, 
+      cf.CriadorID, criador.Nome AS criadorNome, cf.AlteradorID, alterador.Nome AS alteradorNome, 
+      cf.DataCriacao, cf.DataAlteracao from clientefatura cf
+      LEFT JOIN utilizador criador ON criador.ID = cf.CriadorID
+      LEFT JOIN utilizador alterador ON alterador.ID = cf.AlteradorID
+      LEFT JOIN EstadoFatura ef ON ef.ID = cf.EstadoID
+      LEFT JOIN ClienteEncomenda ce ON ce.ID = cf.EncomendaID
+      WHERE cf.EncomendaID = ?`, [id]);
     return rows[0];
   },
 
@@ -40,4 +69,11 @@ export const ClienteFatura = {
       [alteradorID, id]
     );
   },
+
+      async pagar(id, alteradorID) {
+    await pool.query(
+      'UPDATE Clientefatura SET DataPagamento = NOW(), EstadoID = 3, AlteradorID = ? WHERE ID = ?',
+      [alteradorID, id]
+    );
+  }
 };

@@ -102,11 +102,11 @@ const EncomendaView = () => {
           <tbody>
             {currentData.map((encomenda) => (
               <tr key={encomenda.ID}>
-                <td>{encomenda.Produto}</td>
+                <td>{encomenda.Produto} €</td>
                 <td>{encomenda.quantidade || "--"} </td>
-                <td>{encomenda.ValorUnitario || "--"}</td>
-                <td>{encomenda.valorIVA}</td>
-                <td>{encomenda.Total}</td>
+                <td>{encomenda.ValorUnitario || "--"} €</td>
+                <td>{encomenda.valorIVA} €</td>
+                <td>{encomenda.Total} €</td>
               </tr>
             ))}
           </tbody>

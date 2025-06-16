@@ -8,8 +8,8 @@ class Main extends Component{
   render() {
     return (
       <>
-      <h1 className="teste">Dados MAIN</h1>
-      <h2>wooow</h2>
+      <h1 className="teste">Backoffice</h1>
+      <h2>«- clique nos botões para começar</h2>
       </>
     )
   }

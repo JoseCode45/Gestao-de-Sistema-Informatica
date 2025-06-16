@@ -11,14 +11,6 @@ LEFT JOIN Utilizador UA ON A.AlteradorID = UA.ID`);
   },
 
 
-
-  /*
-
-  async getAll() {
-    const [rows] = await pool.query('SELECT * FROM Armazem');
-    return rows;
-  },
-*/
   async getById(id) {
     const [rows] = await pool.query('SELECT * FROM Armazem WHERE ID = ?', [id]);
     return rows[0];

@@ -34,6 +34,8 @@ import empregadoRoutes from './routes/utilizador/empregadoRoutes.js';
 import generoRoutes from './routes/utilizador/generoRoutes.js';
 import nacionalidadeRoutes from './routes/utilizador/nacionalidadeRoutes.js';
 import utilizadorRoutes from './routes/utilizador/utilizadorRoutes.js';
+import clienteFatura from './routes/utilizador/clienteFaturaRoutes.js';
+
 
 dotenv.config();
 const app = express();
@@ -69,6 +71,8 @@ app.use("/categoria-func", categoriaFuncRoutes);
 app.use("/cliente-encomenda-produtos", clienteEncomendaProdutosRoutes);
 app.use("/cliente-encomenda", clienteEncomendaRoutes);
 app.use("/cliente", clienteRoutes);
+app.use("/cliente-fatura", clienteFatura);
+
 app.use("/empregado", empregadoRoutes);
 app.use("/genero", generoRoutes);
 app.use("/nacionalidade", nacionalidadeRoutes);

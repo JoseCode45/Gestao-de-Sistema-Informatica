@@ -4,7 +4,7 @@ import { ClienteEncomenda } from '../../models/utilizador/ClienteEncomendaModels
 import authenticateToken from '../../services/authenticateToken.js';
 import authorizeRole from '../../services/authorizeRole.js';
 import pool from '../../database.js';
-import { confirmarNovaEncomenda } from '../../services/encomenda.js';
+
 
 
 router.use(authenticateToken);
@@ -18,142 +18,177 @@ router.get('/user', async (req, res) => {
 });
 
 
-
-
 router.post('/encomendas/confirmar', authenticateToken, async (req, res) => {
-  const { carrinho } = req.body;
+  const { carrinho, morada, transportadoraID, horarioEntrega } = req.body;
   const IVA = 0.13;
   const totalTransporte = 5.00;
+
+  console.log('Dados recebidos:', req.body);
 
   if (!carrinho || !Array.isArray(carrinho) || carrinho.length === 0) {
     return res.status(400).json({ message: 'Carrinho inválido' });
   }
-  await pool.query('START TRANSACTION'); //Começa a transação, caso alguma coisa dê errado, será dado ROLLBACK e voltará ao estado anterior
+
+  if (!morada || !transportadoraID || !horarioEntrega) {
+    return res.status(400).json({ message: 'Morada, transportadora ou horário não existe.' });
+  }
+
+  await pool.query('START TRANSACTION');
   try {
     const utilizadorID = req.user.id;
 
-    // Buscar ClienteID correspondente ao UtilizadorID autenticado
+    // Buscar ClienteID
     const [clienteRows] = await pool.query(
       'SELECT ID FROM Cliente WHERE UtilizadorID = ?',
       [utilizadorID]
     );
 
-    //Caso não encontre um ClienteID
-    if (clienteRows.length === 0) {
+    if (!clienteRows.length) {
       return res.status(404).json({ message: 'Cliente não encontrado para este utilizador' });
     }
+
     const clienteID = clienteRows[0].ID;
 
-    // Criar nova encomenda (temporariamente sem os totais)
+    const [dateRow] = await pool.query(`SELECT DATE_ADD(NOW(), INTERVAL 7 DAY) AS data7`);
+    const data7 = dateRow[0].data7; // ex: '2025-06-21T13:45:10.000Z'
+    const datePart = data7.toISOString().slice(0,10);  // '2025-06-21'
+    const dataEntregaStr = `${datePart} ${horarioEntrega}:00`; // '2025-06-21 15:30:00'
+
+    // Criar nova encomenda
     const [encomendaResult] = await pool.query(
-      'INSERT INTO ClienteEncomenda (DataEnvio, ClienteID, EstadoID) VALUES (NOW(), ?, ?)',
-      [clienteID, 1]
+      `INSERT INTO ClienteEncomenda 
+        (DataEnvio, ClienteID, EstadoID, Morada, dataEntrega) 
+       VALUES (NOW(), ?, ?, ?, ?)`,
+      [clienteID, 1, morada, dataEntregaStr]
     );
     const encomendaID = encomendaResult.insertId;
 
-    // Inicializar totais, serão usados para inserir em ClienteEncomenda
-    let totalProduto = 0;
-    let totalImpostos = 0;
-      
-    //Ações para cada item de um carrinho.
-for (const item of carrinho) {
-  const { ProdutoID, quantity } = item;
-
-  // Verificar o stock disponível
-  const [stockRows] = await pool.query(
-    'SELECT Quantidade FROM ProdutoStock WHERE ProdutoID = ? FOR UPDATE',
-    [ProdutoID]
-  );
-
-  if (stockRows.length === 0) {
-    return res.status(400).json({ message: `Stock não encontrado para o Produto ID ${ProdutoID}.` });
-  }
-
-  const stockAtual = stockRows[0].Quantidade;
-
-  if (stockAtual < quantity) {
-    await pool.query('ROLLBACK');
-    return res.status(400).json({
-      message: `Stock insuficiente para o Produto ID ${ProdutoID}. Disponível: ${stockAtual}, Solicitado: ${quantity}`
-    });
-  }
-
-  // Buscar preço e promoções
-  const [produtoRows] = await pool.query(`
-    SELECT 
-      p.Preco, 
-      pr.DescontoTipo, 
-      pr.DescontoValor
-    FROM Produto p
-    LEFT JOIN ProdutoPromocao pp ON pp.ProdutoID = p.ID
-    LEFT JOIN Promocao pr ON pr.ID = pp.PromocaoID
-      AND pr.EstadoID = 3
-      AND pr.DataInicio <= NOW()
-      AND (pr.DataValidade IS NULL OR pr.DataValidade >= NOW())
-    WHERE p.ID = ?
-  `, [ProdutoID]);
-
-  //Se não encontrou o ID da Promoção
-  if (produtoRows.length === 0) {
-    return res.status(400).json({ message: `Produto com ID ${ProdutoID} não encontrado.` });
-  }
-
-
-  const produto = produtoRows[0];
-  let precoUnitario = produto.Preco;
-
-  // Aplicar desconto se houver
-  if (produto.DescontoTipo && produto.DescontoValor != null) {
-    if (produto.DescontoTipo === 'percentual') {
-      precoUnitario -= (precoUnitario * produto.DescontoValor / 100);
-    } else if (produto.DescontoTipo === 'fixo') {
-      precoUnitario -= produto.DescontoValor;
-    }
-  }
-
-  precoUnitario = Math.max(precoUnitario, 0);
-
-  const subtotal = precoUnitario * quantity;
-  const valorIVA = subtotal * IVA;
-  const total = subtotal + valorIVA;
-
-  //Aumentar IVA e Produto 
-  totalProduto += subtotal;
-  totalImpostos += valorIVA;
-
-  // Inserir produto na encomenda
-  await pool.query(
-    `INSERT INTO ClienteEncomendaProdutos 
-     (EncomendaID, ProdutoID, Quantidade, ValorUnitario, ValorIVA, Total) 
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [encomendaID, ProdutoID, quantity, precoUnitario, valorIVA, total]
-  );
-
-  // Atualizar Stock
-  await pool.query(
-    'UPDATE ProdutoStock SET Quantidade = Quantidade - ?, UltimaSaida = NOW() WHERE ProdutoID = ?',
-    [quantity, ProdutoID]
-  );
-}
-
-    const totalEncomenda = totalProduto + totalImpostos + totalTransporte;
-
-    // Atualizar ClienteEncomenda com os totais finais
-    await pool.query(
-      `UPDATE ClienteEncomenda
-       SET TotalProduto = ?, totalImpostos = ?, TotalTransporte = ?, TotalEncomenda = ?
-       WHERE ID = ?`,
-      [totalProduto, totalImpostos, totalTransporte, totalEncomenda, encomendaID]
+    /*
+    const [transporteResult] = await pool.query(
+      `INSERT INTO transporte 
+        (DataSaida, DataEntrega, CustoTotal, ClienteEncomendaID, TransportadoraID, EstadoID, CriadorID, AlteradorID) 
+       VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)`,
+      [dataEntregaStr, 50, encomendaID, transportadoraID, 1 , clienteID, clienteID]
     );
+
+    */
+    // Inserir produtos e atualizar stock
+    for (const item of carrinho) {
+      const { ProdutoID, quantity } = item;
+
+      const [stockRows] = await pool.query(
+        'SELECT Quantidade FROM ProdutoStock WHERE ProdutoID = ? FOR UPDATE',
+        [ProdutoID]
+      );
+
+      if (stockRows.length === 0 || stockRows[0].Quantidade < quantity) {
+        await pool.query('ROLLBACK');
+        return res.status(400).json({
+          message: `Stock insuficiente para o Produto ID ${ProdutoID}.`
+        });
+      }
+
+      const [produtoRows] = await pool.query(`
+        SELECT 
+          p.Preco, 
+          pr.DescontoTipo, 
+          pr.DescontoValor
+        FROM Produto p
+        LEFT JOIN ProdutoPromocao pp ON pp.ProdutoID = p.ID
+        LEFT JOIN Promocao pr ON pr.ID = pp.PromocaoID
+          AND pr.EstadoID = 3
+          AND pr.DataInicio <= NOW()
+          AND (pr.DataValidade IS NULL OR pr.DataValidade >= NOW())
+        WHERE p.ID = ?
+      `, [ProdutoID]);
+
+      if (produtoRows.length === 0) {
+        await pool.query('ROLLBACK');
+        return res.status(400).json({ message: `Produto com ID ${ProdutoID} não encontrado.` });
+      }
+
+      let precoUnitario = produtoRows[0].Preco;
+
+      if (produtoRows[0].DescontoTipo && produtoRows[0].DescontoValor != null) {
+        if (produtoRows[0].DescontoTipo === 'percentual') {
+          precoUnitario -= (precoUnitario * produtoRows[0].DescontoValor / 100);
+        } else {
+          precoUnitario -= produtoRows[0].DescontoValor;
+        }
+      }
+
+      precoUnitario = Math.max(precoUnitario, 0);
+
+      const subtotal = precoUnitario * quantity;
+      const valorIVA = subtotal * IVA;
+      const total = subtotal + valorIVA;
+
+      
+      await pool.query(`
+        INSERT INTO ClienteEncomendaProdutos 
+          (EncomendaID, ProdutoID, Quantidade, ValorUnitario, ValorIVA, Total)
+        VALUES (?, ?, ?, ?, ?, ?)`,
+        [encomendaID, ProdutoID, quantity, precoUnitario, valorIVA, total]);
+
+      await pool.query(
+        'UPDATE ProdutoStock SET Quantidade = Quantidade - ?, UltimaSaida = NOW() WHERE ProdutoID = ?',
+        [quantity, ProdutoID]
+      );
+      
+    }
+
+    //Atualizar a encomenda e colocar os valores totais
+    await pool.query(`
+      UPDATE ClienteEncomenda ce
+      JOIN (
+        SELECT 
+          EncomendaID,
+          SUM(ValorUnitario * Quantidade) AS TotalProduto,
+          SUM(ValorIVA) AS totalImpostos,
+          SUM(Total) AS TotalComProdutosEIVA
+        FROM ClienteEncomendaProdutos
+        WHERE EncomendaID = ?
+        GROUP BY EncomendaID
+      ) sums ON ce.ID = sums.EncomendaID
+      SET 
+        ce.TotalProduto = sums.TotalProduto,
+        ce.totalImpostos = sums.totalImpostos,
+        ce.TotalTransporte = ?,
+        ce.TotalEncomenda = sums.TotalComProdutosEIVA + ?
+    `, [encomendaID, totalTransporte, totalTransporte]);
+
+    const [dateValidade] = await pool.query(`SELECT DATE_ADD(NOW(), INTERVAL 1 MONTH) AS dataVal`);
+    const dataVal = dateValidade[0].dataVal; // ex: '2025-06-21T13:45:10.000Z'
+
+    //Criar uma fatura da encomenda
+const [[totais]] = await pool.query(`
+  SELECT 
+    SUM(ValorIVA) AS TotalIVA,
+    SUM(Total) AS TotalComProdutosEIVA
+  FROM ClienteEncomendaProdutos
+  WHERE EncomendaID = ?
+`, [encomendaID]);
+
+const totalFaturado = parseFloat(totais.TotalComProdutosEIVA) + totalTransporte;
+
+await pool.query(
+  `INSERT INTO clientefatura 
+    (DataEmissao, DataValidade, EncomendaID, TotalFaturado, TotalIVA, EstadoID, CriadorID, AlteradorID) 
+   VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)`,
+  [dataVal, encomendaID, totalFaturado, totais.TotalIVA, 1 , clienteID, clienteID]
+);
 
     await pool.query('COMMIT');
     return res.status(201).json({ message: 'Encomenda confirmada com sucesso', encomendaID });
+
   } catch (error) {
     await pool.query('ROLLBACK');
     console.error('Erro ao confirmar encomenda:', error);
     return res.status(500).json({ message: 'Erro interno do servidor' });
   }
 });
+
+
 
 
 
@@ -249,6 +284,22 @@ router.put('/:id/produtos', async (req, res) => {
         Total
       );
     }
+
+        const [soma] = await pool.query(`
+  SELECT 
+    SUM(ValorIVA) AS totalImpostos,
+    SUM(ValorUnitario * Quantidade) AS totalProduto,
+    SUM(ValorUnitario * Quantidade) + SUM(ValorIVA) AS totalEncomenda
+  FROM ClienteEncomendaProdutos
+  WHERE EncomendaID = ?
+`, [encomendaID]);
+
+await pool.query(`
+  UPDATE ClienteEncomenda 
+  SET TotalEncomenda = ?, TotalProduto = ?, TotalImpostos = ?, totalTransporte = ?
+  WHERE ID = ?
+`, [soma[0].totalEncomenda, soma[0].totalProduto, soma[0].totalImpostos, 5, encomendaID]);
+
 
     res.json({ message: 'Produtos da encomenda atualizados com sucesso.' });
   } catch (error) {

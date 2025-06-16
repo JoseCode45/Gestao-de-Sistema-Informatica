@@ -26,22 +26,22 @@ export const produto = {
 
   //====================================
 
-async  atualizarTotais(encomendaID, totalProdutos, totalImpostos, totalTransporte = 0, conn) {
-  const totalEncomenda = totalProdutos + totalImpostos + totalTransporte;
-  await conn.query(`
+  async atualizarTotais(encomendaID, totalProdutos, totalImpostos, totalTransporte = 0, conn) {
+    const totalEncomenda = totalProdutos + totalImpostos + totalTransporte;
+    await conn.query(`
     UPDATE ClienteEncomenda
     SET TotalProduto = ?, TotalImpostos = ?, TotalTransporte = ?, TotalEncomenda = ?
     WHERE ID = ?`,
-    [totalProdutos, totalImpostos, totalTransporte, totalEncomenda, encomendaID]
-  );
-},
+      [totalProdutos, totalImpostos, totalTransporte, totalEncomenda, encomendaID]
+    );
+  },
 
   //====================================
 
 
   //
-  async  buscarProdutoComPromocao(produtoID) {
-  const [rows] = await pool.query(`
+  async buscarProdutoComPromocao(produtoID) {
+    const [rows] = await pool.query(`
     SELECT 
       p.Preco AS precoOriginal,
       pr.DescontoTipo AS tipoDesconto,
@@ -54,8 +54,8 @@ async  atualizarTotais(encomendaID, totalProdutos, totalImpostos, totalTransport
     WHERE p.ID = ?
   `, [produtoID]);
 
-  return rows[0];
-},
+    return rows[0];
+  },
 
   //Obter todos os produtos
   async getAll() {
@@ -94,6 +94,17 @@ async  atualizarTotais(encomendaID, totalProdutos, totalImpostos, totalTransport
     GROUP BY p.ID
   `);
     return rows;
+  },
+
+  async getListFornecedor(id) {
+    const [rows] = await pool.query(
+      `SELECT p.ID, p.Nome, p.Preco FROM Produto p
+      LEFT JOIN fornecedorprodutos fp ON fp.ProdutoID = p.ID
+      LEFT JOIN fornecedor f ON f.ID = FP.FornecedorID
+      WHERE f.ID = ?
+      GROUP BY p.ID
+`, [id]);
+    return rows
   },
 
   //Obter produto por ID
