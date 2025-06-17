@@ -26,22 +26,22 @@ const TransporteEdit = () => {
 
     const token = localStorage.getItem('token');
 
-      // Helper: format ISO string to "yyyy-MM-ddTHH:mm" local datetime string for input[type=datetime-local]
-  const toDateTimeLocal = (isoString) => {
-    if (!isoString) return '';
-    const date = new Date(isoString);
+    // Helper: format ISO string to "yyyy-MM-ddTHH:mm" local datetime string for input[type=datetime-local]
+    const toDateTimeLocal = (isoString) => {
+        if (!isoString) return '';
+        const date = new Date(isoString);
 
-    const pad = (n) => n.toString().padStart(2, '0');
+        const pad = (n) => n.toString().padStart(2, '0');
 
-    // Use local time parts
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const hours = pad(date.getHours());
-    const minutes = pad(date.getMinutes());
+        // Use local time parts
+        const year = date.getFullYear();
+        const month = pad(date.getMonth() + 1);
+        const day = pad(date.getDate());
+        const hours = pad(date.getHours());
+        const minutes = pad(date.getMinutes());
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
+        return `${year}-${month}-${day}T${hours}:${minutes}`;
+    };
 
 
     useEffect(() => {
@@ -96,7 +96,7 @@ const TransporteEdit = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`${BASE_URL}/transporte/${id}`, { ...form}, {
+            await axios.put(`${BASE_URL}/transporte/${id}`, { ...form }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             navigate('/admin/transporte');
@@ -107,18 +107,33 @@ const TransporteEdit = () => {
     };
 
     const proximafase = async () => {
-    try {
-        await axios.patch(`${BASE_URL}/transporte/fornecedor/step/${id}`, {
-        }, {
-            headers: { Authorization: `Bearer ${token}` }
-        });
-        alert('Transporte atualizado para a próxima fase com sucesso!');
-        navigate('/admin/transporte');
-    } catch (err) {
-        console.error("Erro ao avançar fase:", err);
-        alert("Erro ao avançar para a próxima fase.");
-    }
-};
+        try {
+            await axios.patch(`${BASE_URL}/transporte/fornecedor/step/${id}`, {
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Transporte atualizado para a próxima fase com sucesso!');
+            navigate('/admin/transporte');
+        } catch (err) {
+            console.error("Erro ao avançar fase:", err);
+            alert("Erro ao avançar para a próxima fase.");
+        }
+    };
+
+        const proximafaseCliente = async () => {
+        try {
+            await axios.patch(`${BASE_URL}/transporte/cliente/step/${id}`, {
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            alert('Transporte atualizado para a próxima fase com sucesso!');
+            navigate('/admin/transporte');
+        } catch (err) {
+            console.error("Erro ao avançar fase:", err);
+            alert("Erro ao avançar para a próxima fase.");
+        }
+    };
+
 
     return (
         <div className="container mt-4">
@@ -139,7 +154,7 @@ const TransporteEdit = () => {
                             name="dataSaida"
                             value={form.dataSaida}
                             onChange={handleChange}
-                            disabled={form.estadoID==4}
+                            disabled={form.estadoID == 4}
                             required
                         />
                     </div>
@@ -151,7 +166,7 @@ const TransporteEdit = () => {
                             name="dataEntrega"
                             value={form.dataEntrega}
                             onChange={handleChange}
-                            disabled={form.estadoID==4 }
+                            disabled={form.estadoID == 4}
                         />
                     </div>
                     <div className="mb-3">
@@ -165,7 +180,7 @@ const TransporteEdit = () => {
                             value={form.custoTotal}
                             onChange={handleChange}
                             required
-                            disabled={form.estadoID==4 }
+                            disabled={form.estadoID == 4}
                         />
                     </div>
                     <div className="mb-3">
@@ -210,7 +225,7 @@ const TransporteEdit = () => {
                             value={form.transportadoraID}
                             onChange={handleChange}
                             required
-                            disabled={form.estadoID==4 }
+                            disabled={form.estadoID == 4}
                         >
                             <option value="">Selecione uma Transportadora</option>
                             {transportadoras.map(transp => (
@@ -228,7 +243,7 @@ const TransporteEdit = () => {
                             value={form.estadoID}
                             onChange={handleChange}
                             required
-                            disabled={form.estadoID==4 }
+                            disabled={form.estadoID == 4}
                         >
                             <option value="">Selecione um Estado</option>
                             {estados.map(estado => (
@@ -240,15 +255,28 @@ const TransporteEdit = () => {
                     </div>
                     <hr />
                     <button type="submit" className="btn btn-primary">Salvar Alterações</button>
-                    {(form.estadoID !== 4 ) && (
-    <button 
-        type="button" 
-        className="btn btn-warning ms-2" 
-        onClick={proximafase}
-    >
-        Ir para próxima fase
-    </button>
-)}
+                    {(form.estadoID !== 4) && form.fornecedorEncomendaID && (
+                        <button
+                            type="button"
+                            className="btn btn-warning ms-2"
+                            onClick={proximafase}
+                        >
+                            Ir para próxima fase
+                        </button>
+
+                        
+                    )}
+                                        {(form.estadoID !== 4) && form.clienteEncomendaID && (
+                        <button
+                            type="button"
+                            className="btn btn-warning ms-2"
+                            onClick={proximafaseCliente}
+                        >
+                            Ir para próxima fase
+                        </button>
+
+                        
+                    )}
                 </form>
             )}
         </div>

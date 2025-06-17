@@ -72,7 +72,7 @@ const EncomendaView = () => {
     <>
       <br></br>
       <div className="fixd d-flex justify-content-between align-items-center mb-3">
-        <h1>Encomendas {id}</h1>
+        <h1>Encomenda ID {id}</h1>
 
         <div className="form-outline flex-grow-1 mx-3">
           <input type="search" className="form-control" placeholder="Pesquisa" value={search} onChange={(e) => setSearch(e.target.value)} />

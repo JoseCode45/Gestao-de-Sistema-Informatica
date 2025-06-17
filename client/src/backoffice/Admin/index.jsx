@@ -66,8 +66,8 @@ const Admin = () => {
         <Route path="cliente" element={<RoleRoute allowedRoles={CargoOcorrencias}> <Cliente /> </RoleRoute>} />
 
         <Route path="clienteencomenda" element={<RoleRoute allowedRoles={CargoPromocoes.concat(CargoEntregaPedidos,CargoOcorrencias)}> <ClienteEncomenda /></RoleRoute>} />
-        <Route path="clienteencomenda/edit/:id" element={<RoleRoute allowedRoles={[CargoEntregaPedidos,CargoProcessamentoPedidos, CargoOcorrencias]}> <ClienteEncomendaEdit/></RoleRoute>} />
-        <Route path="clientefatura" element={<RoleRoute allowedRoles={CargoProcessamentoPedidos.concat(CargoEntregaPedidos)}> <ClienteFatura /> </RoleRoute>} />
+        <Route path="clienteencomenda/edit/:id" element={<RoleRoute allowedRoles={CargoProcessamentoPedidos.concat(CargoEntregaPedidos, CargoOcorrencias)}> <ClienteEncomendaEdit/></RoleRoute>} />
+        <Route path="clientefatura" element={<RoleRoute allowedRoles={CargoProcessamentoPedidos.concat(CargoEntregaPedidos, CargoOcorrencias)}> <ClienteFatura /> </RoleRoute>} />
 
 
         <Route path="fornecedorencomenda" element={<RoleRoute allowedRoles={CargoProcessamentoPedidos.concat(CargoGestaoStock)}> <FornecedorEncomenda /> </RoleRoute>} />

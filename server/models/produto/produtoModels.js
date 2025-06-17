@@ -24,6 +24,44 @@ export const produto = {
     return rows;
   },
 
+  /*
+SELECT 
+  p.ID, 
+  p.Nome, 
+  p.Preco, 
+  r.Nome AS RegiaoNome, 
+  ps.Quantidade AS Stock,
+  GROUP_CONCAT(DISTINCT c.Nome SEPARATOR ', ') AS Castas,
+  promo.Descontotipo, 
+  promo.DescontoValor, 
+  promo.Motivo, 
+  promo.DataInicio, 
+  promo.DataValidade, 
+  promo.EstadoID
+FROM Produto p
+INNER JOIN ProdutoStock ps ON p.ID = ps.ProdutoID
+LEFT JOIN Regiao r ON p.RegiaoID = r.ID
+LEFT JOIN ProdutoCasta pc ON p.ID = pc.ProdutoID
+LEFT JOIN Casta c ON pc.CastaID = c.ID
+LEFT JOIN (
+  SELECT 
+    pp.ProdutoID,
+    pr.Descontotipo,
+    pr.DescontoValor,
+    pr.Motivo,
+    pr.DataInicio,
+    pr.DataValidade,
+    pr.EstadoID
+  FROM Produtopromocao pp
+  INNER JOIN Promocao pr ON pp.PromocaoID = pr.ID
+  WHERE pr.EstadoID = 3
+) promo ON promo.ProdutoID = p.ID
+WHERE p.Estado = 'ativo' AND ps.Quantidade > 0
+GROUP BY p.ID
+ORDER BY promo.EstadoID = 3 DESC;
+
+  */
+
   //====================================
 
   async atualizarTotais(encomendaID, totalProdutos, totalImpostos, totalTransporte = 0, conn) {

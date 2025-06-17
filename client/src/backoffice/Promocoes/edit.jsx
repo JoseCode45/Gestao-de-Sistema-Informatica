@@ -122,7 +122,28 @@ const PromocaoEdit = () => {
   setSaving(true);
 
   try {
-    await axios.patch(`${BASE_URL}/promocao/${id}`, {
+    await axios.patch(`${BASE_URL}/promocao/${id}/cancelar`, {
+      
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    navigate('/admin/promocoes');
+  } catch (error) {
+    console.error('Erro ao cancelar promoção:', error);
+    alert('Erro ao cancelar promoção.');
+    setSaving(false);
+  }
+};
+
+  const ativar = async () => {
+  const confirmAtivar = window.confirm("Tem certeza que deseja começar esta promoção?");
+  if (!confirmAtivar) return;
+
+  setSaving(true);
+
+  try {
+    await axios.patch(`${BASE_URL}/promocao/${id}/ativar`, {
       
     }, {
       headers: { Authorization: `Bearer ${token}` }
@@ -229,8 +250,17 @@ const PromocaoEdit = () => {
           type="button"
           className="btn btn-danger ms-2"
           onClick={cancelar}
-          disabled={saving}
+          disabled={saving || form.estadoID == 4}
         >Cancelar</button>
+
+
+
+        <button
+          type="button"
+          className="btn btn-danger ms-2"
+          onClick={ativar}
+          disabled={saving || form.estadoID == 4}
+        >Forçar Ativar</button>
 
 
       </form>

@@ -139,6 +139,13 @@ async cancelar(promocaoID, alteradorID) {
     UPDATE Promocao SET AlteradorID = ?, EstadoID = 4, DataValidade = NOW() WHERE ID = ?
 `, [alteradorID, promocaoID]);
   return rows;
+},
+
+async ativar(promocaoID, alteradorID) {
+  const [rows] = await pool.query(`
+    UPDATE Promocao SET AlteradorID = ?, EstadoID = 3, DataValidade = NOW() WHERE ID = ?
+`, [alteradorID, promocaoID]);
+  return rows;
 }
 
 

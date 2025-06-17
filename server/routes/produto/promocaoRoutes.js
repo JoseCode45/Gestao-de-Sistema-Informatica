@@ -130,14 +130,14 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Cancelar promoção
-router.patch('/:id', async (req, res) => {
+router.patch('/:id/cancelar', async (req, res) => {
   const alteradorID = req.user.id;
   await Promocao.cancelar(req.params.id, alteradorID);
   res.json({ message: 'Promocao cancelada' });
 });
 
 // Ativar Promocao
-router.patch('/:id', async (req, res) => {
+router.patch('/:id/ativar', async (req, res) => {
   const { alteradorID } = req.body;
   await Promocao.ativar(req.params.id, alteradorID);
   res.json({ message: 'Promocao ativada' });

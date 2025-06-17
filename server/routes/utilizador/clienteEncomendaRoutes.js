@@ -72,6 +72,7 @@ router.post('/encomendas/confirmar', authenticateToken, async (req, res) => {
     );
 
     */
+   
     // Inserir produtos e atualizar stock
     for (const item of carrinho) {
       const { ProdutoID, quantity } = item;
@@ -175,7 +176,7 @@ await pool.query(
   `INSERT INTO clientefatura 
     (DataEmissao, DataValidade, EncomendaID, TotalFaturado, TotalIVA, EstadoID, CriadorID, AlteradorID) 
    VALUES (NOW(), ?, ?, ?, ?, ?, ?, ?)`,
-  [dataVal, encomendaID, totalFaturado, totais.TotalIVA, 1 , clienteID, clienteID]
+  [dataVal, encomendaID, totalFaturado, totais.TotalIVA, 1 , utilizadorID, utilizadorID] 
 );
 
     await pool.query('COMMIT');

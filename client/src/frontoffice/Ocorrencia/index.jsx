@@ -115,14 +115,7 @@ const Ocorrencia = () => {
                   </button>
                 </td>
                 <td className="text-center align-middle">
-                  <button
-                    className='btn btn-outline-dark rounded-0'
-                    onClick={async () => {
-                      navigate(`/ocorrencia/view/${oc.ID}`);
-                    }}
-                  >
-                    Visualizar
-                  </button>
+         
                 </td>
               </tr>
             ))}
