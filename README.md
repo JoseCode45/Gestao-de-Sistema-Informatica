@@ -4,18 +4,14 @@ Grupo de Trabalho Para Gestao de Sistema Informaticão
 
   
 ## Instalação
-Para instalar o projeto, siga estas etapas:
-1. Clone o repositório:
-2. Abrir um command prompt, entrar no folder e escrever "npm install"
-3. navigar para o  folder client e escrever "npm install"
-4. Para iniciar o projeto escrever "npm run dev"
-5. lançar o servidor de base de dados por entrado no root folder e escrever "npm start"
-6. entrar no "http://localhost:5757"
-
-Como iniciar o projeto:
-1. Entre na pasta principal
-2. CD client
-3. npm run dev
-4. CD ..
-5. CD server
-6. npm run dev
+Para iniciar o projeto localmente, é preciso fazer as seguintes etapas:
+1.	Instale os arquivos do repositório do github;
+2.	Extraia a pasta;
+3.	Abre a linha de comandos dentro da pasta;
+4.	CD server
+5.	npm install nodemon, npm install express, npm install cors, npm install dotenv, npm install mysql2, 
+6.	npm run dev
+7.	CD ..
+8.	CD client
+9.	npm install vite
+10.	npm run dev
